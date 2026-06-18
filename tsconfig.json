@@ -1,0 +1,25 @@
+{
+	"compilerOptions": {
+		"rootDir": "./src",
+		"outDir": "./build",
+		"target": "es2016",
+		"module": "commonjs",
+		"types": [],
+		"sourceMap": true,
+		"declaration": true,
+		"declarationMap": true,
+		"noUncheckedIndexedAccess": true,
+		"exactOptionalPropertyTypes": true,
+		"strict": true,
+		"isolatedModules": true,
+		"noUncheckedSideEffectImports": true,
+		"skipLibCheck": true,
+		"ignoreDeprecations": "6.0",
+		"baseUrl": "./",
+		"paths": {
+			"@/*": ["./src/*"]
+		}
+	},
+	"include": ["./src"],
+	"exclude": ["node_modules", "build"]
+}
