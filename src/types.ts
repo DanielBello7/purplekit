@@ -1,0 +1,40 @@
+import { EntitySchema, MixedList, DataSourceOptions } from 'typeorm';
+
+export type GENERATE_MIGRATIONS = {
+  name?: string;
+  force?: boolean;
+};
+
+export type CREATE_DB = {
+  name?: string;
+};
+
+export type DB_STATUS = {
+  name?: string;
+};
+
+export type DROP_DB = {
+  name?: string;
+};
+
+export type MIGRATE = {
+  name?: string;
+  file?: string;
+};
+
+export type CONFIGURATIONS = {
+  TYPE: DataSourceOptions['type'];
+  ENTITIES: MixedList<string | Function | EntitySchema<any>>;
+  MIGRATIONS: MixedList<string | Function>;
+  SSL_TYPE: 'light' | 'heavy';
+  SSL_MODE: boolean;
+  DATABASE_CA_CERT: string;
+  DATABASE_HOST: string;
+  DATABASE_PORT: number;
+  DATABASE_USERNAME: string;
+  DATABASE_PASSWORD: string;
+  DATABASE_NAME: string;
+  SYNCHRONIZE: boolean;
+  LOGGING: boolean;
+  INITIAL_DATABASE: string;
+};

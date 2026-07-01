@@ -1,24 +1,51 @@
 {
-  "name": "47-dpoint",
+  "name": "tgx",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bin": {
+    "tgx": "./bin/tgx"
+  },
+  "files": [
+    "bin",
+    "build",
+    "docs",
+    "README.md"
+  ],
   "scripts": {
     "test": "mocha",
     "build": "tsc && tsc-alias",
     "typecheck": "tsc --noEmit",
-    "dev": "tsx watch -r tsconfig-paths/register src/app.ts",
-    "start": "node build/server.js"
+    "dev": "tsx src/app.ts",
+    "tgx": "node build/app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.15.0",
   "devDependencies": {
+    "@types/chai": "^5.2.3",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^25.9.3",
+    "mocha": "^11.7.6",
+    "resolve-tspaths": "^0.8.23",
     "tsc-alias": "^1.8.17",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "commander": "^15.0.0",
+    "execa": "^9.6.1",
+    "mysql2": "^3.22.5",
+    "pg": "^8.21.0",
+    "picocolors": "^1.1.1",
+    "prettier": "^3.9.3",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^0.3.0",
+    "typeorm-extension": "^3.9.0"
   }
 }
