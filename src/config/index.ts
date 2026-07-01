@@ -2,7 +2,7 @@ import { CONFIGURATIONS } from '@/types';
 
 const cfg: CONFIGURATIONS = {
   ENTITIES: ['src/**/*.schema.ts'],
-  MIGRATIONS: ['src/db/migrations/*.ts'],
+  MIGRATIONS: ['src/db/migrations/**/*.ts'],
   TYPE: 'postgres',
   SSL_MODE: false,
   SSL_TYPE: 'light',

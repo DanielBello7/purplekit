@@ -7,6 +7,7 @@ import { cfg } from '@/config';
 import { sanitize } from '@/libs/sanitize';
 import prettier from 'prettier';
 import * as fs from 'fs';
+import * as path from 'path';
 
 /**
  * Detects pending schema changes by diffing entities against the database.
@@ -47,7 +48,8 @@ const generate = async (
   });
 
   const migrationName = name ?? `Mig`;
-  let filename = `${migrationName}${timestamp}.ts`;
+  let filename = `${migrationName}${timestamp}`;
+  let location = `src/db/migrations/${filename}/migration.ts`;
 
   try {
     await ds.initialize();
@@ -78,7 +80,8 @@ const generate = async (
       tabWidth: 2,
     });
 
-    await fs.promises.writeFile(`src/db/migrations/${filename}`, formatted);
+    await fs.promises.mkdir(path.dirname(location), { recursive: true });
+    await fs.promises.writeFile(location, formatted);
 
     return {
       generated: true,
@@ -87,7 +90,7 @@ const generate = async (
       hasChanges,
     };
   } catch (e) {
-    const err = e instanceof Error ? e.message : 'Unable to serialize error';
+    const err = e instanceof Error ? e.message : JSON.stringify(e);
     throw new Error(err);
   } finally {
     if (initialized) {
@@ -115,7 +118,7 @@ const gen = async (args: GENERATE_MIGRATIONS) => {
 
     print(`Migration for ${database} created successfully: ${response.title}`);
   } catch (e) {
-    const err = e instanceof Error ? e.message : 'Cannot serialize error';
+    const err = e instanceof Error ? e.message : JSON.stringify(e);
     printf(`Error creating database: ${err}`);
     process.exit(1);
   }

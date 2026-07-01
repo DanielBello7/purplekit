@@ -1,6 +1,6 @@
 import { getCheckMigrationCommand } from '@/libs/get-commands';
 import { createDataSource } from '@/libs/create-ds';
-import { printf } from '@/libs/print';
+import { print, printf } from '@/libs/print';
 import { MIGRATE } from '@/types';
 import { DataSource } from 'typeorm';
 import * as fs from 'fs';
@@ -11,17 +11,42 @@ type MigrationResult = {
   status: 'migrated' | 'already-migrated' | 'no-migrations';
 };
 
-async function getMigrationFiles() {
-  const p = `src/db/migrations`;
-  return fs.readdirSync(p).map((i) => {
+type MigrationItem = {
+  name: string;
+  parentPath: string;
+  exists: boolean;
+  file: string;
+};
+
+/**
+ * Lists migration directories under `src/db/migrations` and whether each
+ * contains a `migration.ts` file.
+ *
+ * @returns An array of {@link MigrationItem} entries, one per migration folder.
+ */
+async function getMigrationFiles(): Promise<MigrationItem[]> {
+  const root = `src/db/migrations`;
+  const entries = fs.readdirSync(root, { withFileTypes: true });
+  const dirs = entries.filter((d) => d.isDirectory());
+  return dirs.map((i) => {
+    const loc = path.join(i.parentPath, i.name, 'migration.ts');
     return {
-      name: i.split('.ts')[0]!,
-      path: path.join(p, i),
-      file: i,
+      name: i.name,
+      file: loc,
+      parentPath: i.parentPath,
+      exists: fs.existsSync(loc),
     };
   });
 }
 
+/**
+ * Checks whether a migration has already been recorded in the database.
+ * Queries the `migrations` table via a dialect-specific command.
+ *
+ * @param ds - Initialized TypeORM data source.
+ * @param name - Migration folder name to look up.
+ * @returns Whether the migration name exists in the migrations table.
+ */
 async function hasMigration(ds: DataSource, name: string) {
   const command = getCheckMigrationCommand();
   const rows = await ds.query(command, [name]);
@@ -29,34 +54,87 @@ async function hasMigration(ds: DataSource, name: string) {
   return v;
 }
 
-async function runMigrationByName(name: string): Promise<MigrationResult> {
-  const path = `src/db/migrations/${name}.ts`;
+/**
+ * Resolves which local migrations still need to run against the database.
+ * Opens the default data source, discovers migration folders (optionally
+ * scoped to `name`), and filters out entries that are missing or already recorded.
+ *
+ * @param name - Optional migration folder name; when omitted, all folders are considered.
+ * @returns Pending {@link MigrationItem} entries; empty when none apply.
+ * @throws When the data source cannot connect or migration lookup fails.
+ */
+async function getMigrationsToRun(name?: string): Promise<MigrationItem[]> {
+  const ds = createDataSource();
   let initialized = false;
-  const ds = createDataSource({
-    migrations: [path],
-  });
-
   try {
-    const fileExists = fs.existsSync(path);
-    if (!fileExists) throw new Error("migration file doesn't exist");
-
     await ds.initialize();
     initialized = true;
 
-    const migrated = await hasMigration(ds, name);
-    if (migrated) {
+    const items = new Set<MigrationItem>();
+    if (name) {
+      const path = `src/db/migrations/${name}/migration.ts`;
+      if (fs.existsSync(path)) {
+        items.add({
+          exists: true,
+          file: path,
+          name,
+          parentPath: `src/db/migrations/${name}`,
+        });
+      }
+    } else {
+      const files = await getMigrationFiles();
+      files.forEach((f) => items.add(f));
+    }
+
+    const a = await Promise.all(
+      Array.from(items).map(async (f) => {
+        return {
+          ...f,
+          isMigrated: await hasMigration(ds, f.name),
+        };
+      }),
+    );
+    return a
+      .filter((f) => f.exists && !f.isMigrated)
+      .map(({ isMigrated, ...f }) => f);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : JSON.stringify(e);
+    throw new Error(msg);
+  } finally {
+    if (initialized) {
+      await ds.destroy();
+    }
+  }
+}
+
+/**
+ * Runs pending migrations discovered via {@link getMigrationsToRun}.
+ * When `name` is omitted, runs every unmigrated folder under `src/db/migrations`.
+ *
+ * @param name - Optional migration folder name to run a single migration.
+ * @returns Outcome with `migrated` flag and status (`migrated` or `no-migrations`).
+ * @throws When migration discovery or execution fails.
+ */
+async function runMigrationByName(name?: string): Promise<MigrationResult> {
+  let initialized = false;
+  let ds: DataSource | null = null;
+
+  try {
+    const migratable = await getMigrationsToRun(name);
+    if (migratable.length < 1) {
       return {
         migrated: false,
-        status: 'already-migrated',
+        status: 'no-migrations',
       };
     }
 
-    const executed = await ds.runMigrations({
-      transaction: 'all',
-      fake: false,
+    ds = createDataSource({
+      migrations: migratable.map((m) => m.file),
     });
+    await ds.initialize();
+    initialized = true;
 
-    console.log('executed', executed);
+    const executed = await ds.runMigrations();
     if (executed.length < 1) {
       return {
         migrated: false,
@@ -72,16 +150,27 @@ async function runMigrationByName(name: string): Promise<MigrationResult> {
     const parsed = e instanceof Error ? e.message : JSON.stringify(e);
     throw new Error(parsed);
   } finally {
-    if (initialized) {
+    if (initialized && ds) {
       await ds.destroy();
     }
   }
 }
 
+/**
+ * Runs all migrations registered on a TypeORM data source configuration.
+ * Initializes the data source, executes pending migrations in a single
+ * transaction, then destroys the connection.
+ *
+ * @param ds - TypeORM data source with `migrations` configured (not yet initialized).
+ * @returns Outcome with `migrated` flag and status (`migrated` or `no-migrations`).
+ * @throws When initialization or migration execution fails.
+ */
 async function runMigrationByConfig(ds: DataSource): Promise<MigrationResult> {
   let initialized = false;
   try {
     await ds.initialize();
+    initialized = true;
+
     const response = await ds.runMigrations({
       fake: false,
       transaction: 'all',
@@ -106,44 +195,84 @@ async function runMigrationByConfig(ds: DataSource): Promise<MigrationResult> {
   }
 }
 
-async function runManyMigrationsByName() {}
+/**
+ * Resolves a migration folder name and `migration.ts` path from a CLI path input.
+ * Accepts either a migration directory or a direct path to `migration.ts`.
+ * Validates that the folder name is class-style and ends with a 13-digit timestamp.
+ *
+ * @param input - Migration folder or file path from `--file`.
+ * @returns The migration name and normalized path to `migration.ts`.
+ * @throws When the name is invalid or the migration file does not exist.
+ */
+function getMigrationNameFromPath(input: string): {
+  name: string;
+  path: string;
+} {
+  const normalized = path.normalize(input);
+  const base = path.basename(normalized);
+
+  const file =
+    base === 'migration.ts'
+      ? normalized
+      : path.join(normalized, 'migration.ts');
+  const migdir = path.dirname(file);
+
+  const name = path.basename(migdir);
+  const validMigName = new RegExp(/^[A-Za-z][A-Za-z0-9_]*\d{13}$/);
+
+  if (!validMigName.test(name)) {
+    throw new Error(
+      `Invalid migration name. Expected a class-style name ending with a 13-digit timestamp`,
+    );
+  }
+
+  if (!fs.existsSync(file)) {
+    throw new Error(`Migration file doesn't exist: ${file}`);
+  }
+
+  return {
+    name,
+    path: file,
+  };
+}
 
 /**
- * performs migrations with already existing migration files on a database that
- * has been initialized
- * @param args
+ * CLI handler for the `migrate` command.
+ * Runs pending migrations via {@link runMigrationByName}. When `--file` is
+ * provided, resolves the migration name from the path first.
+ * Prints the outcome to stdout and exits with code 0 or 1.
+ *
+ * @param args - CLI options; `--name` scopes to one migration folder, `--file` to a folder or `migration.ts` path.
  */
 async function migrate(args: MIGRATE) {
-  let initialized = false;
-  const ds2 = createDataSource();
   try {
-    await ds2.initialize();
-    initialized = true;
+    let response: MigrationResult;
+    if (args.file) {
+      const result = getMigrationNameFromPath(args.file);
+      response = await runMigrationByName(result.name);
+    } else {
+      response = await runMigrationByName(args.name);
+    }
 
-    const a = await getMigrationFiles();
-    const result = await Promise.all(
-      a.map(async (item) => {
-        const res = await hasMigration(ds2, item.name);
-        return res;
-      }),
-    );
+    if (response.migrated) {
+      print('Migrations run successfully');
+      process.exit(0);
+    }
 
-    console.log(result);
-
-    // const a = await ds2.showMigrations();
-    // const a = await ds2.runMigrations();
-
-    // console.log('a', a);
+    print(`Migrations didn't run: ${response.status}`);
     process.exit(0);
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Unable to serialize error';
     printf(msg);
     process.exit(1);
-  } finally {
-    if (initialized) {
-      await ds2.destroy();
-    }
   }
 }
 
-export { migrate, hasMigration, runMigrationByName, runMigrationByConfig };
+export {
+  migrate,
+  runMigrationByConfig,
+  runMigrationByName,
+  getMigrationsToRun,
+  hasMigration,
+  getMigrationFiles,
+};

@@ -64,7 +64,10 @@ program
   .command('migrate')
   .description('Execute already existing migration files')
   .option('--name <name>', 'Migration basename/class name without .ts')
-  .option('--file <file>', 'The path to the migration file to be executed')
+  .option(
+    '--file <file>',
+    'The path to the migration file to be executed eg. src/db/migrations/Mig1234563534',
+  )
   .action((args: MIGRATE) => migrate(args));
 
 // run the whole migration process
