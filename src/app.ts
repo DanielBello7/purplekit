@@ -14,12 +14,19 @@ import { seed } from './db/features/seed';
 import { migrate } from './db/features/migrate';
 import { gen } from './db/features/gen';
 import { status } from './db/features/status';
+import { init } from './db/features/init';
 
 // initialize the desc and info of the app
 program
   .name('tgx')
   .description('typeorm database actions wrapper')
   .version('1.0.0', '-v, --cli-version', 'Output the tgx CLI version.');
+
+// create core parts
+program
+  .command('init')
+  .description('Setup required configurations, files and folders')
+  .action(() => init());
 
 // generate a new migration
 program

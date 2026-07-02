@@ -11,7 +11,7 @@ type MigrationResult = {
   status: 'migrated' | 'already-migrated' | 'no-migrations';
 };
 
-type MigrationItem = {
+export type MigrationItem = {
   name: string;
   parentPath: string;
   exists: boolean;
@@ -28,15 +28,17 @@ async function getMigrationFiles(): Promise<MigrationItem[]> {
   const root = `src/db/migrations`;
   const entries = fs.readdirSync(root, { withFileTypes: true });
   const dirs = entries.filter((d) => d.isDirectory());
-  return dirs.map((i) => {
-    const loc = path.join(i.parentPath, i.name, 'migration.ts');
-    return {
-      name: i.name,
-      file: loc,
-      parentPath: i.parentPath,
-      exists: fs.existsSync(loc),
-    };
-  });
+  return dirs
+    .map((i) => {
+      const loc = path.join(i.parentPath, i.name, 'migration.ts');
+      return {
+        name: i.name,
+        file: loc,
+        parentPath: i.parentPath,
+        exists: fs.existsSync(loc),
+      };
+    })
+    .filter((a) => a.exists);
 }
 
 /**

@@ -4,7 +4,75 @@ import { DB_STATUS } from '@/types';
 import { print, printf } from '@/libs/print';
 import { cfg } from '@/config';
 import { sanitize } from '@/libs/sanitize';
-import ds from '@/db/ds';
+import { getMigrationFiles, hasMigration, MigrationItem } from './migrate';
+import {
+  compareMig,
+  getParserDialect,
+  MigrationDuplicate,
+} from '@/libs/compare-mig';
+import * as fs from 'fs/promises';
+
+const migrationStatus = async (name?: string) => {
+  let initialized = false;
+  const ds2 = createDataSource(name ? { database: name } : {});
+
+  try {
+    await ds2.initialize();
+    initialized = true;
+
+    const migrations = await getMigrationFiles();
+
+    const applied: MigrationItem[] = [];
+    const pending: MigrationItem[] = [];
+
+    const response = await Promise.all(
+      migrations.map(async (m) => {
+        const hasRun = await hasMigration(ds2, m.name);
+        return { ...m, hasRun };
+      }),
+    );
+
+    for (const m of response) {
+      const { hasRun, ...rest } = m;
+      if (hasRun) applied.push(rest);
+      else pending.push(rest);
+    }
+
+    return { applied, pending };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : JSON.stringify(e);
+    throw new Error(msg);
+  } finally {
+    if (initialized) {
+      await ds2.destroy();
+    }
+  }
+};
+
+const checkForDuplicateMig = async (): Promise<{
+  total: number;
+  checks: (MigrationItem & { duplicateOf: MigrationDuplicate })[];
+}> => {
+  const results: (MigrationItem & { duplicateOf: MigrationDuplicate })[] = [];
+  const dialect = getParserDialect(cfg.TYPE);
+  const files = await getMigrationFiles();
+
+  for (const i of files) {
+    const existing = files.filter((m) => i.name !== m.name);
+    const data = await fs.readFile(i.file, { encoding: 'utf-8' });
+    const resp = await compareMig(data, existing, dialect);
+    if (resp)
+      results.push({
+        duplicateOf: resp,
+        ...i,
+      });
+    else continue;
+  }
+  return {
+    total: files.length,
+    checks: results,
+  };
+};
 
 /**
  * Checks whether a database with the given name exists.
@@ -17,6 +85,7 @@ const doesDbExists = async (
   name: string,
 ): Promise<{ databaseOk: boolean; dbName: string } & Record<string, any>> => {
   let initialized = false;
+  const ds = createDataSource();
   try {
     const command = getDbCheckCommand();
     await ds.initialize();
@@ -82,21 +151,42 @@ const status = async (args: DB_STATUS) => {
   const name = sanitize(args.name ?? cfg.DATABASE_NAME);
 
   try {
-    let response = {};
+    let response: Record<string, any> = {};
     const exists = await doesDbExists(name);
 
     if (exists.databaseOk) {
       const check = await dbStatus(name);
-      response = { ...response, ...exists, ...check };
-    } else
+      const migsCheck = await migrationStatus(name);
       response = {
         ...response,
         ...exists,
+        ...check,
+        migrations: {
+          applied: migsCheck.applied.length,
+          pending: migsCheck.pending.length,
+        },
       };
+    }
+    const migs = await checkForDuplicateMig();
+
+    response = {
+      ...response,
+      ...exists,
+      migrations: {
+        ...response.migrations,
+        files: migs.total,
+        duplicates: migs.checks.map((m) => ({
+          name: m.name,
+          duplicateOf: m.duplicateOf.name,
+        })),
+      },
+    };
+
     print(JSON.stringify(response, null, 2));
+    process.exit(0);
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Unable to Serialize';
-    printf(`Error occured: ${msg}`);
+    printf(`Error occurred: ${msg}`);
     process.exit(1);
   }
 };

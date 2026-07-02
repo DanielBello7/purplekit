@@ -41,6 +41,7 @@
     "commander": "^15.0.0",
     "execa": "^9.6.1",
     "mysql2": "^3.22.5",
+    "node-sql-parser": "^5.4.0",
     "pg": "^8.21.0",
     "picocolors": "^1.1.1",
     "prettier": "^3.9.3",

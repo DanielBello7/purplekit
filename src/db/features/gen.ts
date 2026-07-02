@@ -5,6 +5,8 @@ import { print, printf } from '@/libs/print';
 import { DataSource } from 'typeorm';
 import { cfg } from '@/config';
 import { sanitize } from '@/libs/sanitize';
+import { compareMig, getParserDialect } from '@/libs/compare-mig';
+import { getMigrationFiles } from './migrate';
 import prettier from 'prettier';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -23,6 +25,68 @@ const hasSchemaChanges = async (ds: DataSource) => {
   return val;
 };
 
+const genMig = async (ds: DataSource, name: string, timestamp: number) => {
+  const hasChanges = await hasSchemaChanges(ds);
+
+  const result = await generateMigration({
+    name,
+    timestamp,
+    dataSource: ds,
+    preview: true,
+  });
+
+  const formatted = await prettier.format(result.content!, {
+    parser: 'typescript',
+    singleQuote: true,
+    trailingComma: 'all',
+    tabWidth: 2,
+  });
+
+  return {
+    content: result.content!,
+    formatted,
+    hasChanges,
+  };
+};
+
+const saveMig = async (location: string, content: string) => {
+  await fs.promises.mkdir(path.dirname(location), { recursive: true });
+  await fs.promises.writeFile(location, content);
+  return void 0;
+};
+
+const getMetadata = (name?: string) => {
+  const timestamp = Date.now();
+  const migrationName = name ?? `Mig`;
+  const filename = `${migrationName}${timestamp}`;
+  const location = `src/db/migrations/${filename}/migration.ts`;
+
+  return {
+    location,
+    filename,
+    migrationName,
+    timestamp,
+  };
+};
+
+type MoreInfo = {
+  title: string;
+  timestamp: number;
+};
+
+type Success = {
+  generated: true;
+  more: MoreInfo;
+};
+
+type Failure = {
+  generated: false;
+  more: {
+    reason: 'duplicate-found' | 'no-changes';
+    duplicateOf?: string;
+  } & MoreInfo;
+};
+type GeneratReturn = Success | Failure;
 /**
  * Generates a migration file from current entity schemas.
  *
@@ -35,59 +99,47 @@ const generate = async (
   database: string,
   force?: boolean,
   name?: string,
-): Promise<{
-  hasChanges: boolean;
-  generated: boolean;
-  title: string;
-  timestamp: number;
-}> => {
+): Promise<GeneratReturn> => {
   let initialized = false;
-  const timestamp = Date.now();
-  const ds = createDataSource({
-    database,
-  });
-
-  const migrationName = name ?? `Mig`;
-  let filename = `${migrationName}${timestamp}`;
-  let location = `src/db/migrations/${filename}/migration.ts`;
+  const ds = createDataSource({ database });
+  const { filename, location, migrationName, timestamp } = getMetadata(name);
 
   try {
+    const dialect = getParserDialect(cfg.TYPE);
+    const existing = await getMigrationFiles();
+
     await ds.initialize();
     initialized = true;
 
-    const hasChanges = await hasSchemaChanges(ds);
-
-    if (!hasChanges && !force) {
+    const generated = await genMig(ds, migrationName, timestamp);
+    if (!generated.hasChanges && !force) {
       return {
         generated: false,
-        title: filename,
-        hasChanges,
-        timestamp,
+        more: { reason: 'no-changes', timestamp, title: filename },
       };
     }
 
-    const result = await generateMigration({
-      name: migrationName,
-      timestamp,
-      dataSource: ds,
-      preview: true,
-    });
+    const duplicate = await compareMig(generated.content, existing, dialect);
 
-    const formatted = await prettier.format(result.content!, {
-      parser: 'typescript',
-      singleQuote: true,
-      trailingComma: 'all',
-      tabWidth: 2,
-    });
+    if (duplicate) {
+      return {
+        generated: false,
+        more: {
+          reason: 'duplicate-found',
+          timestamp,
+          title: filename,
+          duplicateOf: duplicate.name,
+        },
+      };
+    }
 
-    await fs.promises.mkdir(path.dirname(location), { recursive: true });
-    await fs.promises.writeFile(location, formatted);
-
+    await saveMig(location, generated.formatted);
     return {
       generated: true,
-      title: filename,
-      timestamp,
-      hasChanges,
+      more: {
+        timestamp,
+        title: filename,
+      },
     };
   } catch (e) {
     const err = e instanceof Error ? e.message : JSON.stringify(e);
@@ -111,12 +163,19 @@ const gen = async (args: GENERATE_MIGRATIONS) => {
   try {
     print(`Generating migration for ${database}...`);
     const response = await generate(database, args.force, name);
-    if (!response.hasChanges && !args.force) {
-      print('No schema changes detected — skipping migration generation');
-      return;
+    if (!response.generated) {
+      if (response.more.reason === 'no-changes') {
+        print('No schema changes detected — skipping migration generation');
+      }
+      if (response.more.reason === 'duplicate-found') {
+        printf(`Duplicate migration found: ${response.more.duplicateOf}`);
+      } else throw new Error('Unknown generated response');
+    } else {
+      print(
+        `Migration for ${database} created successfully: ${response.more.title}`,
+      );
     }
-
-    print(`Migration for ${database} created successfully: ${response.title}`);
+    process.exit(0);
   } catch (e) {
     const err = e instanceof Error ? e.message : JSON.stringify(e);
     printf(`Error creating database: ${err}`);
