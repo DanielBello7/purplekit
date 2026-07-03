@@ -3,7 +3,7 @@ import { CREATE_DB } from '@/types';
 import { cfg } from '@/config';
 import { print, printf } from '@/libs/print';
 import { sanitize } from '@/libs/sanitize';
-import ds from '@/db/ds';
+import { createDataSource } from '@/libs/create-ds';
 
 /**
  * Creates a database if it does not already exist.
@@ -17,6 +17,7 @@ async function create(name: string): Promise<{
   created: boolean;
   error?: string;
 }> {
+  const ds = createDataSource();
   let initialized = false;
   try {
     const createCommand = getCreateDbCommand(name);

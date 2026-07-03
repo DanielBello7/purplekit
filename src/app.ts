@@ -5,6 +5,7 @@ import type {
   DROP_DB,
   GENERATE_MIGRATIONS,
   MIGRATE,
+  MIGRATION,
 } from './types';
 import { migration } from './db/features/migration';
 import { dropdb } from './db/features/dropdb';
@@ -71,6 +72,7 @@ program
   .command('migrate')
   .description('Execute already existing migration files')
   .option('--name <name>', 'Migration basename/class name without .ts')
+  .option('--db <database>', 'Database which migration should be applied to')
   .option(
     '--file <file>',
     'The path to the migration file to be executed eg. src/db/migrations/Mig1234563534',
@@ -81,7 +83,11 @@ program
 program
   .command('migration')
   .description('Generate a new migration file and execute it immediately')
-  .action((args) => migration(args));
+  .option(
+    '-a, --all',
+    'Run all migration files along with the newly generated migration',
+  )
+  .action((args: MIGRATION) => migration(args));
 
 // start the app
 program.parseAsync();

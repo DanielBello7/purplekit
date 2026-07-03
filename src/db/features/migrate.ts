@@ -5,6 +5,8 @@ import { MIGRATE } from '@/types';
 import { DataSource } from 'typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
+import { sanitize } from '@/libs/sanitize';
+import { cfg } from '@/config';
 
 type MigrationResult = {
   migrated: boolean;
@@ -26,6 +28,7 @@ export type MigrationItem = {
  */
 async function getMigrationFiles(): Promise<MigrationItem[]> {
   const root = `src/db/migrations`;
+  if (!fs.existsSync(root)) return [];
   const entries = fs.readdirSync(root, { withFileTypes: true });
   const dirs = entries.filter((d) => d.isDirectory());
   return dirs
@@ -50,10 +53,24 @@ async function getMigrationFiles(): Promise<MigrationItem[]> {
  * @returns Whether the migration name exists in the migrations table.
  */
 async function hasMigration(ds: DataSource, name: string) {
-  const command = getCheckMigrationCommand();
-  const rows = await ds.query(command, [name]);
-  const v = rows.length > 0;
-  return v;
+  try {
+    const command = getCheckMigrationCommand();
+    const rows = await ds.query(command, [name]);
+    const v = rows.length > 0;
+    return v;
+  } catch (e) {
+    const code = typeof e === 'object' && e && 'code' in e ? e.code : undefined;
+    const msg = e instanceof Error ? e.message : '';
+
+    if (
+      code === '42P01' ||
+      msg.includes('relation "migrations" does not exist')
+    ) {
+      return false;
+    }
+
+    throw e;
+  }
 }
 
 /**
@@ -65,8 +82,11 @@ async function hasMigration(ds: DataSource, name: string) {
  * @returns Pending {@link MigrationItem} entries; empty when none apply.
  * @throws When the data source cannot connect or migration lookup fails.
  */
-async function getMigrationsToRun(name?: string): Promise<MigrationItem[]> {
-  const ds = createDataSource();
+async function getMigrationsToRun(
+  name?: string,
+  db?: string,
+): Promise<MigrationItem[]> {
+  const ds = createDataSource(db ? { database: db } : {});
   let initialized = false;
   try {
     await ds.initialize();
@@ -117,12 +137,15 @@ async function getMigrationsToRun(name?: string): Promise<MigrationItem[]> {
  * @returns Outcome with `migrated` flag and status (`migrated` or `no-migrations`).
  * @throws When migration discovery or execution fails.
  */
-async function runMigrationByName(name?: string): Promise<MigrationResult> {
+async function runMigrationByName(
+  name?: string,
+  db?: string,
+): Promise<MigrationResult> {
   let initialized = false;
   let ds: DataSource | null = null;
 
   try {
-    const migratable = await getMigrationsToRun(name);
+    const migratable = await getMigrationsToRun(name, db);
     if (migratable.length < 1) {
       return {
         migrated: false,
@@ -132,6 +155,7 @@ async function runMigrationByName(name?: string): Promise<MigrationResult> {
 
     ds = createDataSource({
       migrations: migratable.map((m) => m.file),
+      ...(db ? { database: db } : {}),
     });
     await ds.initialize();
     initialized = true;
@@ -167,7 +191,8 @@ async function runMigrationByName(name?: string): Promise<MigrationResult> {
  * @returns Outcome with `migrated` flag and status (`migrated` or `no-migrations`).
  * @throws When initialization or migration execution fails.
  */
-async function runMigrationByConfig(ds: DataSource): Promise<MigrationResult> {
+async function runMigrationByConfig(db?: string): Promise<MigrationResult> {
+  const ds = createDataSource(db ? { database: db } : {});
   let initialized = false;
   try {
     await ds.initialize();
@@ -247,13 +272,14 @@ function getMigrationNameFromPath(input: string): {
  * @param args - CLI options; `--name` scopes to one migration folder, `--file` to a folder or `migration.ts` path.
  */
 async function migrate(args: MIGRATE) {
+  const database = sanitize(args.db ?? cfg.DATABASE_NAME);
   try {
     let response: MigrationResult;
     if (args.file) {
       const result = getMigrationNameFromPath(args.file);
-      response = await runMigrationByName(result.name);
+      response = await runMigrationByName(result.name, database);
     } else {
-      response = await runMigrationByName(args.name);
+      response = await runMigrationByName(args.name, database);
     }
 
     if (response.migrated) {

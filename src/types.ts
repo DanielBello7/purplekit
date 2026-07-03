@@ -20,6 +20,11 @@ export type DROP_DB = {
 export type MIGRATE = {
   name?: string;
   file?: string;
+  db?: string;
+};
+
+export type MIGRATION = {
+  all?: boolean;
 };
 
 export type CONFIGURATIONS = {

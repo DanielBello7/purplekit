@@ -3,7 +3,7 @@ import { DROP_DB } from '@/types';
 import { cfg } from '@/config';
 import { sanitize } from '@/libs/sanitize';
 import { getDropDbCommand } from '@/libs/get-commands';
-import ds from '@/db/ds';
+import { createDataSource } from '@/libs/create-ds';
 
 /**
  * Drops a database if it exists.
@@ -12,6 +12,7 @@ import ds from '@/db/ds';
  * @returns Whether the drop succeeded; includes `error` on failure.
  */
 async function drop(name: string): Promise<{ dropped: boolean }> {
+  const ds = createDataSource();
   let initialized = false;
   try {
     const command = getDropDbCommand(name);

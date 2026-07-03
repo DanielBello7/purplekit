@@ -85,6 +85,8 @@ const doesDbExists = async (
   name: string,
 ): Promise<{ databaseOk: boolean; dbName: string } & Record<string, any>> => {
   let initialized = false;
+  // this datasource connects to the postgres because that always exists so it actually doesn't need
+  // a db pass onto its object
   const ds = createDataSource();
   try {
     const command = getDbCheckCommand();
@@ -112,15 +114,15 @@ const doesDbExists = async (
  * Inspects a target database and returns its public/base table count.
  * Opens a dedicated TypeORM data source pointed at `name`.
  *
- * @param name - Database to inspect.
+ * @param db - Database to inspect.
  * @returns Table count on success; `tables: 0` and `err` on failure.
  */
 const dbStatus = async (
-  name: string,
+  db: string,
 ): Promise<{ tables: number } & Record<string, any>> => {
   // target data source
   let initialized = false;
-  const tds = createDataSource({ database: name });
+  const tds = createDataSource({ database: db });
   try {
     const command = getDbTablesCommand();
     await tds.initialize();

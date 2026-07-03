@@ -11,6 +11,27 @@ import prettier from 'prettier';
 import * as fs from 'fs';
 import * as path from 'path';
 
+type MoreInfo = {
+  title: string;
+  saved: boolean;
+  timestamp: number;
+  location: string;
+};
+
+type Success = {
+  generated: true;
+  more: MoreInfo & { content: string };
+};
+
+type Failure = {
+  generated: false;
+  more: {
+    reason: 'duplicate-found' | 'no-changes';
+    duplicateOf?: string;
+  } & MoreInfo;
+};
+type GeneratReturn = Success | Failure;
+
 /**
  * Detects pending schema changes by diffing entities against the database.
  *
@@ -69,76 +90,78 @@ const getMetadata = (name?: string) => {
   };
 };
 
-type MoreInfo = {
-  title: string;
-  timestamp: number;
+type GenerateParams = {
+  db: string;
+  force: boolean | undefined;
+  name: string | undefined;
+  save: boolean | undefined;
 };
-
-type Success = {
-  generated: true;
-  more: MoreInfo;
-};
-
-type Failure = {
-  generated: false;
-  more: {
-    reason: 'duplicate-found' | 'no-changes';
-    duplicateOf?: string;
-  } & MoreInfo;
-};
-type GeneratReturn = Success | Failure;
 /**
  * Generates a migration file from current entity schemas.
  *
- * @param database - Database the migration is generated against.
+ * @param db - Database the migration is generated against.
  * @param force - Force generation even when no schema changes are detected.
  * @param name - Migration file name; defaults to a timestamp.
  * @returns Generation outcome including title and whether changes were found.
  */
 const generate = async (
-  database: string,
-  force?: boolean,
-  name?: string,
+  params: Partial<GenerateParams> = {},
 ): Promise<GeneratReturn> => {
   let initialized = false;
-  const ds = createDataSource({ database });
-  const { filename, location, migrationName, timestamp } = getMetadata(name);
+  const ds = createDataSource(params.db ? { database: params.db } : {});
+  const metadata = getMetadata(params.name);
 
   try {
-    const dialect = getParserDialect(cfg.TYPE);
-    const existing = await getMigrationFiles();
-
     await ds.initialize();
     initialized = true;
 
-    const generated = await genMig(ds, migrationName, timestamp);
-    if (!generated.hasChanges && !force) {
+    const generated = await genMig(
+      ds,
+      metadata.migrationName,
+      metadata.timestamp,
+    );
+    if (!generated.hasChanges && !params.force) {
       return {
         generated: false,
-        more: { reason: 'no-changes', timestamp, title: filename },
+        more: {
+          reason: 'no-changes',
+          timestamp: metadata.timestamp,
+          title: metadata.filename,
+          saved: false,
+          location: metadata.location,
+        },
       };
     }
 
+    const dialect = getParserDialect(cfg.TYPE);
+    const existing = await getMigrationFiles();
     const duplicate = await compareMig(generated.content, existing, dialect);
 
     if (duplicate) {
       return {
         generated: false,
         more: {
+          location: metadata.location,
           reason: 'duplicate-found',
-          timestamp,
-          title: filename,
+          timestamp: metadata.timestamp,
+          saved: false,
+          title: metadata.filename,
           duplicateOf: duplicate.name,
         },
       };
     }
 
-    await saveMig(location, generated.formatted);
+    if (params.save) {
+      await saveMig(metadata.location, generated.formatted);
+    }
     return {
       generated: true,
       more: {
-        timestamp,
-        title: filename,
+        location: metadata.location,
+        saved: params.save ?? false,
+        timestamp: metadata.timestamp,
+        title: metadata.filename,
+        content: generated.formatted,
       },
     };
   } catch (e) {
@@ -162,12 +185,16 @@ const gen = async (args: GENERATE_MIGRATIONS) => {
 
   try {
     print(`Generating migration for ${database}...`);
-    const response = await generate(database, args.force, name);
+    const response = await generate({
+      db: database,
+      force: args.force,
+      name: name,
+      save: true,
+    });
     if (!response.generated) {
       if (response.more.reason === 'no-changes') {
         print('No schema changes detected — skipping migration generation');
-      }
-      if (response.more.reason === 'duplicate-found') {
+      } else if (response.more.reason === 'duplicate-found') {
         printf(`Duplicate migration found: ${response.more.duplicateOf}`);
       } else throw new Error('Unknown generated response');
     } else {
@@ -183,4 +210,12 @@ const gen = async (args: GENERATE_MIGRATIONS) => {
   }
 };
 
-export { gen, generate };
+export {
+  gen,
+  generate,
+  genMig,
+  compareMig,
+  getMetadata,
+  saveMig,
+  hasSchemaChanges,
+};
