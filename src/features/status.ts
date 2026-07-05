@@ -12,6 +12,12 @@ import {
 } from '@/libs/compare-mig';
 import * as fs from 'fs/promises';
 
+/**
+ * Splits local migration files into applied and pending groups for a database.
+ *
+ * @param name - Optional target database name.
+ * @returns Applied and pending local migration file metadata.
+ */
 const migrationStatus = async (name?: string) => {
   let initialized = false;
   const ds2 = createDataSource(name ? { database: name } : {});
@@ -49,6 +55,11 @@ const migrationStatus = async (name?: string) => {
   }
 };
 
+/**
+ * Detects local migration files with equivalent normalized `up` SQL.
+ *
+ * @returns Total migration file count and duplicate matches.
+ */
 const checkForDuplicateMig = async (): Promise<{
   total: number;
   checks: (MigrationItem & { duplicateOf: MigrationDuplicate })[];

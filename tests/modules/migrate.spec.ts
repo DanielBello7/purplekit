@@ -1,11 +1,12 @@
-import { getMigrationFiles, hasMigration } from '@/db/features/migrate';
+import { getMigrationFiles, hasMigration } from '@/features/migrate';
+import { cfg } from '@/config';
 import { strict as assert } from 'node:assert';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
 describe('migrate feature', () => {
   describe('getMigrationFiles', () => {
-    const root = 'src/db/migrations';
+    const root = cfg.MIGRATIONS_DIR;
     const fixtureName = 'SpecMigration1000000000001';
     const fixtureDir = path.join(root, fixtureName);
     const fixtureFile = path.join(fixtureDir, 'migration.ts');
@@ -22,7 +23,7 @@ describe('migrate feature', () => {
       await fs.rm(fixtureDir, { recursive: true, force: true });
     });
 
-    it('lists migration directories under src/db/migrations', async () => {
+    it('lists migration directories under the configured migrations directory', async () => {
       const files = await getMigrationFiles();
 
       assert.ok(files.some((file) => file.name === fixtureName));

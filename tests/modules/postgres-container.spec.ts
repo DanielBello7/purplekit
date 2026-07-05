@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert';
-import { create, createdb } from '@/db/features/createdb';
-import { drop } from '@/db/features/dropdb';
-import { doesDbExists } from '@/db/features/status';
+import { create, createdb } from '@/features/createdb';
+import { drop } from '@/features/dropdb';
+import { doesDbExists } from '@/features/status';
 import { cfg } from '@/config';
 import { PostgresTestContainer } from '../container';
 

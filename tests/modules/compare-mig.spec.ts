@@ -1,5 +1,5 @@
 import { compareMig, getParserDialect } from '@/libs/compare-mig';
-import { MigrationItem } from '@/db/features/migrate';
+import { MigrationItem } from '@/features/migrate';
 import { describe, it } from 'mocha';
 import { assert } from 'chai';
 import { migration } from '../helpers/migration-gen';

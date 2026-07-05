@@ -3,10 +3,11 @@ import { createDataSource } from '@/libs/create-ds';
 import { print, printf } from '@/libs/print';
 import { MIGRATE } from '@/types';
 import { DataSource } from 'typeorm';
-import * as fs from 'fs';
-import * as path from 'path';
 import { sanitize } from '@/libs/sanitize';
 import { cfg } from '@/config';
+import * as fs from 'fs';
+import * as path from 'path';
+import { getMigrationFile, getMigrationRoot } from '@/libs/paths';
 
 type MigrationResult = {
   migrated: boolean;
@@ -21,13 +22,13 @@ export type MigrationItem = {
 };
 
 /**
- * Lists migration directories under `src/db/migrations` and whether each
+ * Lists migration directories under the configured migrations directory and whether each
  * contains a `migration.ts` file.
  *
  * @returns An array of {@link MigrationItem} entries, one per migration folder.
  */
 async function getMigrationFiles(): Promise<MigrationItem[]> {
-  const root = `src/db/migrations`;
+  const root = getMigrationRoot();
   if (!fs.existsSync(root)) return [];
   const entries = fs.readdirSync(root, { withFileTypes: true });
   const dirs = entries.filter((d) => d.isDirectory());
@@ -75,10 +76,11 @@ async function hasMigration(ds: DataSource, name: string) {
 
 /**
  * Resolves which local migrations still need to run against the database.
- * Opens the default data source, discovers migration folders (optionally
+ * Opens a data source, discovers migration folders (optionally
  * scoped to `name`), and filters out entries that are missing or already recorded.
  *
  * @param name - Optional migration folder name; when omitted, all folders are considered.
+ * @param db - Optional database override for the migration lookup.
  * @returns Pending {@link MigrationItem} entries; empty when none apply.
  * @throws When the data source cannot connect or migration lookup fails.
  */
@@ -94,13 +96,13 @@ async function getMigrationsToRun(
 
     const items = new Set<MigrationItem>();
     if (name) {
-      const path = `src/db/migrations/${name}/migration.ts`;
-      if (fs.existsSync(path)) {
+      const p = getMigrationFile(name);
+      if (fs.existsSync(p)) {
         items.add({
           exists: true,
-          file: path,
+          file: p,
           name,
-          parentPath: `src/db/migrations/${name}`,
+          parentPath: path.dirname(getMigrationFile(name)),
         });
       }
     } else {
@@ -131,9 +133,10 @@ async function getMigrationsToRun(
 
 /**
  * Runs pending migrations discovered via {@link getMigrationsToRun}.
- * When `name` is omitted, runs every unmigrated folder under `src/db/migrations`.
+ * When `name` is omitted, runs every unmigrated folder under the configured migrations directory.
  *
  * @param name - Optional migration folder name to run a single migration.
+ * @param db - Optional database override for migration discovery and execution.
  * @returns Outcome with `migrated` flag and status (`migrated` or `no-migrations`).
  * @throws When migration discovery or execution fails.
  */
@@ -183,11 +186,11 @@ async function runMigrationByName(
 }
 
 /**
- * Runs all migrations registered on a TypeORM data source configuration.
+ * Runs all migrations registered on the configured TypeORM data source.
  * Initializes the data source, executes pending migrations in a single
  * transaction, then destroys the connection.
  *
- * @param ds - TypeORM data source with `migrations` configured (not yet initialized).
+ * @param db - Optional database override for the TypeORM data source.
  * @returns Outcome with `migrated` flag and status (`migrated` or `no-migrations`).
  * @throws When initialization or migration execution fails.
  */

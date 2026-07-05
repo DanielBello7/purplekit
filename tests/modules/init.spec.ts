@@ -1,5 +1,5 @@
 import { strict as assert } from 'node:assert';
-import { init } from '@/db/features/init';
+import { init } from '@/features/init';
 
 describe('init feature', () => {
   it('prints an initialization message', () => {

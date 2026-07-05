@@ -9,10 +9,17 @@
   "bin": {
     "tgx": "./bin/tgx"
   },
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./build/index.js"
+    }
+  },
   "files": [
     "bin",
     "build",
-    "docs",
     "README.md"
   ],
   "scripts": {

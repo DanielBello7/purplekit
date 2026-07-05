@@ -1,4 +1,5 @@
 import { EntitySchema, MixedList, DataSourceOptions } from 'typeorm';
+import { Seeder } from 'typeorm-extension';
 
 export type GENERATE_MIGRATIONS = {
   name?: string;
@@ -27,10 +28,15 @@ export type MIGRATION = {
   all?: boolean;
 };
 
-export type CONFIGURATIONS = {
+export type SEED = {
+  db?: string;
+};
+
+export type TGX_CONFIGURATIONS = {
   TYPE: DataSourceOptions['type'];
   ENTITIES: MixedList<string | Function | EntitySchema<any>>;
-  MIGRATIONS: MixedList<string | Function>;
+  SEEDS: (new () => Seeder)[];
+
   SSL_TYPE: 'light' | 'heavy';
   SSL_MODE: boolean;
   DATABASE_CA_CERT: string;
@@ -42,4 +48,11 @@ export type CONFIGURATIONS = {
   SYNCHRONIZE: boolean;
   LOGGING: boolean;
   INITIAL_DATABASE: string;
+};
+
+export type TGX_INTERNAL_CONFIGURATIONS = TGX_CONFIGURATIONS & {
+  ROOT: string;
+  MIGRATIONS_DIR: string;
+  SEEDS_DIR: string;
+  MIGRATIONS: MixedList<string | Function>;
 };

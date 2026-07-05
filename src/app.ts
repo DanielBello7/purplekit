@@ -6,16 +6,17 @@ import type {
   GENERATE_MIGRATIONS,
   MIGRATE,
   MIGRATION,
+  SEED,
 } from './types';
-import { migration } from './db/features/migration';
-import { dropdb } from './db/features/dropdb';
+import { migration } from './features/migration';
+import { dropdb } from './features/dropdb';
 import { program } from 'commander';
-import { createdb } from './db/features/createdb';
-import { seed } from './db/features/seed';
-import { migrate } from './db/features/migrate';
-import { gen } from './db/features/gen';
-import { status } from './db/features/status';
-import { init } from './db/features/init';
+import { createdb } from './features/createdb';
+import { seed } from './features/seed';
+import { migrate } from './features/migrate';
+import { gen } from './features/gen';
+import { status } from './features/status';
+import { init } from './features/init';
 
 // initialize the desc and info of the app
 program
@@ -58,7 +59,8 @@ program
 program
   .command('seed')
   .description('Populate an existing database with seed data')
-  .action((args) => seed(args));
+  .option('--db <db>', 'The name of the db to be seeded')
+  .action((args: SEED) => seed(args));
 
 // get the status of a database
 program
@@ -75,7 +77,7 @@ program
   .option('--db <database>', 'Database which migration should be applied to')
   .option(
     '--file <file>',
-    'The path to the migration file to be executed eg. src/db/migrations/Mig1234563534',
+    'The path to the migration file to be executed eg. tgx/migrations/Mig1234563534',
   )
   .action((args: MIGRATE) => migrate(args));
 

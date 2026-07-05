@@ -1,4 +1,4 @@
-import { MigrationItem } from '@/db/features/migrate';
+import { MigrationItem } from '@/features/migrate';
 import { Parser } from 'node-sql-parser';
 import crypto from 'node:crypto';
 import * as fs from 'node:fs';
@@ -18,6 +18,13 @@ type SqlDialect =
   | 'sqlite' 
   | 'transactsql';
 
+/**
+ * Extracts a migration method body by matching its declaration and balancing braces.
+ *
+ * @param content - Migration file source text.
+ * @param method - Migration method to extract.
+ * @returns The method body, or an empty string when the method is not found.
+ */
 function getMethodBody(content: string, method: 'up' | 'down'): string {
   // prettier-ignore
   const pattern = new RegExp(`(?:public\\s+|private\\s+|protected\\s+)?(?:async\\s+)?${method}\\s*\\([^)]*\\)\\s*(?::\\s*[^\\{]+)?\\{`);
@@ -126,11 +133,11 @@ function getMigQueries(content: string): string[] {
 }
 
 /**
- * Builds a combined AST signature for all queries in a migration file.
+ * Builds normalized AST signatures for all `up` queries in a migration file.
  *
  * @param content - Migration file source text.
  * @param dialect - Parser dialect for the target database.
- * @returns Normalized AST strings joined by a delimiter.
+ * @returns Normalized AST strings in file order.
  */
 function getMigAstSignatures(content: string, dialect: SqlDialect): string[] {
   const queries = getMigQueries(content);
@@ -148,11 +155,11 @@ function hash(value: string): string {
 }
 
 /**
- * Hashes the canonical AST signature of a migration file's up queries.
+ * Hashes each normalized `up` query and the sorted migration-level query set.
  *
  * @param content - Migration file source text.
  * @param dialect - Parser dialect for the target database.
- * @returns SHA-256 hash of the migration's normalized AST signature.
+ * @returns Query hashes plus a migration hash that is insensitive to query order.
  */
 function getMigAstHashes(
   content: string,
@@ -167,13 +174,12 @@ function getMigAstHashes(
 
 /**
  * Compares a generated migration against existing files by AST hash.
- * Returns the first existing migration whose queries normalize to the same signature.
+ * Returns the first existing migration whose `up` queries normalize to the same set.
  *
  * @param current - Source text of the newly generated migration.
  * @param existing - Local migration folders to compare against.
  * @param dialect - Parser dialect for the target database.
  * @returns Duplicate match with file path and hash, or `null` when unique.
- * @throws Not yet implemented.
  */
 async function compareMig(
   current: string,

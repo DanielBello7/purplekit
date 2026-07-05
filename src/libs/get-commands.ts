@@ -69,6 +69,7 @@ const getDbCheckCommand = (type: Params = cfg.TYPE) => {
 /**
  * Returns the SQL used to drop a database for the given DB type.
  *
+ * @param name - Database name to drop.
  * @param type - Database driver type; defaults to `cfg.TYPE`.
  * @returns Parameterized or literal SQL query string.
  * @throws When the type is unsupported.
@@ -99,6 +100,14 @@ const getDropDbCommand = (name: string, type: Params = cfg.TYPE) => {
   }
 };
 
+/**
+ * Returns the SQL used to create a database for the given DB type.
+ *
+ * @param name - Database name to create.
+ * @param type - Database driver type; defaults to `cfg.TYPE`.
+ * @returns Literal SQL query string for creating the database.
+ * @throws When the type is unsupported.
+ */
 const getCreateDbCommand = (name: string, type: Params = cfg.TYPE) => {
   switch (type) {
     case 'postgres':
@@ -122,6 +131,13 @@ const getCreateDbCommand = (name: string, type: Params = cfg.TYPE) => {
   }
 };
 
+/**
+ * Returns the parameterized SQL used to check if a migration has been applied.
+ *
+ * @param type - Database driver type; defaults to `cfg.TYPE`.
+ * @returns Parameterized SQL query string for TypeORM's `migrations` table.
+ * @throws When the type is unsupported.
+ */
 const getCheckMigrationCommand = (type: Params = cfg.TYPE) => {
   switch (type) {
     case 'postgres':

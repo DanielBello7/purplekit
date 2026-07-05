@@ -10,6 +10,7 @@ import { getMigrationFiles } from './migrate';
 import prettier from 'prettier';
 import * as fs from 'fs';
 import * as path from 'path';
+import { getMigrationLocation } from '@/libs/paths';
 
 type MoreInfo = {
   title: string;
@@ -46,6 +47,14 @@ const hasSchemaChanges = async (ds: DataSource) => {
   return val;
 };
 
+/**
+ * Generates a migration preview from an initialized data source and formats it.
+ *
+ * @param ds - Initialized TypeORM data source to diff against.
+ * @param name - Migration class/name prefix.
+ * @param timestamp - Timestamp suffix TypeORM uses in the migration class.
+ * @returns Generated source, formatted source, and whether schema changes exist.
+ */
 const genMig = async (ds: DataSource, name: string, timestamp: number) => {
   const hasChanges = await hasSchemaChanges(ds);
 
@@ -70,17 +79,29 @@ const genMig = async (ds: DataSource, name: string, timestamp: number) => {
   };
 };
 
+/**
+ * Persists a generated migration file, creating its parent folder first.
+ *
+ * @param location - Destination `migration.ts` path.
+ * @param content - TypeScript migration source to write.
+ */
 const saveMig = async (location: string, content: string) => {
   await fs.promises.mkdir(path.dirname(location), { recursive: true });
   await fs.promises.writeFile(location, content);
   return void 0;
 };
 
+/**
+ * Builds the generated migration name and location metadata.
+ *
+ * @param name - Optional migration name prefix; defaults to `Mig`.
+ * @returns Timestamped filename, TypeORM migration name, and target file path.
+ */
 const getMetadata = (name?: string) => {
   const timestamp = Date.now();
   const migrationName = name ?? `Mig`;
   const filename = `${migrationName}${timestamp}`;
-  const location = `src/db/migrations/${filename}/migration.ts`;
+  const location = getMigrationLocation(filename);
 
   return {
     location,
@@ -99,9 +120,8 @@ type GenerateParams = {
 /**
  * Generates a migration file from current entity schemas.
  *
- * @param db - Database the migration is generated against.
- * @param force - Force generation even when no schema changes are detected.
- * @param name - Migration file name; defaults to a timestamp.
+ * @param params - Generation options including target database, force flag,
+ * migration name prefix, and whether to save the file.
  * @returns Generation outcome including title and whether changes were found.
  */
 const generate = async (

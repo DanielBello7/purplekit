@@ -1,4 +1,5 @@
-import { getMetadata, hasSchemaChanges, saveMig } from '@/db/features/gen';
+import { getMetadata, hasSchemaChanges, saveMig } from '@/features/gen';
+import { cfg } from '@/config';
 import { schemaBuilderResult } from 'tests/helpers/schema-builder';
 import { strict as assert } from 'node:assert';
 import * as fs from 'node:fs/promises';
@@ -80,7 +81,7 @@ describe('gen feature', () => {
 
       assert.equal(
         metadata.location,
-        `src/db/migrations/${metadata.filename}/migration.ts`,
+        `${cfg.MIGRATIONS_DIR}/${metadata.filename}/migration.ts`,
       );
     });
   });

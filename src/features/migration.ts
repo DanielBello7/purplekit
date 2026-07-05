@@ -7,6 +7,11 @@ import { print, printf } from '@/libs/print';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
+/**
+ * Removes a generated migration folder from a `migration.ts` file location.
+ *
+ * @param location - Generated migration file path.
+ */
 async function removeMig(location: string) {
   await fs.rm(path.dirname(location), {
     force: true,
@@ -20,6 +25,13 @@ type ApplyReturn = {
   msg: string;
 };
 
+/**
+ * Generates a migration and immediately applies it to the configured database.
+ * The generated file is removed when execution fails or no migration runs.
+ *
+ * @param all - Whether to run all configured migrations instead of only the new one.
+ * @returns Result describing whether generation and application succeeded.
+ */
 async function apply(all?: boolean): Promise<ApplyReturn> {
   // generate migration files
   const database = sanitize(cfg.DATABASE_NAME);
@@ -55,8 +67,9 @@ async function apply(all?: boolean): Promise<ApplyReturn> {
 }
 
 /**
- * creates a migration file based on the schemas
- * @param args
+ * CLI handler for the `migration` command.
+ *
+ * @param args - Command options, including whether to run all migrations.
  */
 async function migration(args: MIGRATION) {
   try {
