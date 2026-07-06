@@ -58,13 +58,13 @@ function seed(args) {
             const seeds = config_1.cfg.SEEDS;
             const response = yield seeder(seeds, args.db);
             if (!response)
-                throw new Error('unable to complete seeding');
-            (0, print_1.print)('Seeding complete');
+                throw new Error('Unable to complete seeding');
+            (0, print_1.print)('Seeding completed successfully.');
             process.exit(0);
         }
         catch (e) {
             const msg = e instanceof Error ? e.message : JSON.stringify(e);
-            (0, print_1.printf)(msg);
+            (0, print_1.printf)(`Failed to run seeders: ${msg}`);
             process.exit(1);
         }
     });

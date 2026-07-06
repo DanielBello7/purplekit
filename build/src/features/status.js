@@ -220,8 +220,8 @@ const status = (args) => __awaiter(void 0, void 0, void 0, function* () {
         process.exit(0);
     }
     catch (e) {
-        const msg = e instanceof Error ? e.message : 'Unable to Serialize';
-        (0, print_1.printf)(`Error occurred: ${msg}`);
+        const msg = e instanceof Error ? e.message : 'Unable to serialize error';
+        (0, print_1.printf)(`Failed to check status: ${msg}`);
         process.exit(1);
     }
 });

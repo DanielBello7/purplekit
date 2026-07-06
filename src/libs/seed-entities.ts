@@ -32,7 +32,7 @@ async function seedEntities<T extends ObjectLiteral>(
   }
 
   print(
-    `Total ${label}: ${records.length}. Seeded ${added} ${label} (skipped ${skipped} existing).`,
+    `Seeded ${label}: ${added} added, ${skipped} skipped, ${records.length} total.`,
   );
 }
 

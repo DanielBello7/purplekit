@@ -209,7 +209,7 @@ const gen = (args) => __awaiter(void 0, void 0, void 0, function* () {
     const database = (0, sanitize_1.sanitize)(config_1.cfg.DATABASE_NAME);
     const name = args.name ? (0, sanitize_1.sanitize)(args.name) : undefined;
     try {
-        (0, print_1.print)(`Generating migration for ${database}...`);
+        (0, print_1.print)(`Generating migration for '${database}'...`);
         const response = yield generate({
             force: args.force,
             db: database,
@@ -218,22 +218,22 @@ const gen = (args) => __awaiter(void 0, void 0, void 0, function* () {
         });
         if (!response.generated) {
             if (response.more.reason === 'no-changes') {
-                (0, print_1.print)('No schema changes detected — skipping migration generation');
+                (0, print_1.print)('No schema changes detected. Migration generation skipped.');
             }
             else if (response.more.reason === 'duplicate-found') {
-                (0, print_1.printf)(`Duplicate migration found: ${response.more.duplicateOf}`);
+                (0, print_1.printf)(`Duplicate migration found: ${response.more.duplicateOf}.`);
             }
             else
                 throw new Error('Unknown generated response');
         }
         else {
-            (0, print_1.print)(`Migration for ${database} created successfully: ${response.more.title}`);
+            (0, print_1.print)(`Migration for '${database}' created successfully: ${response.more.title}.`);
         }
         process.exit(0);
     }
     catch (e) {
         const err = e instanceof Error ? e.message : JSON.stringify(e);
-        (0, print_1.printf)(`Migration generation failed: ${err}`);
+        (0, print_1.printf)(`Failed to generate migration: ${err}`);
         process.exit(1);
     }
 });

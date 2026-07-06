@@ -104,7 +104,7 @@ function ensureFile(path_1) {
  */
 function init() {
     return __awaiter(this, void 0, void 0, function* () {
-        (0, print_1.print)('initializing app');
+        (0, print_1.print)('Creating Purplekit workspace...');
         yield ensureDir(config_1.cfg.ROOT);
         yield ensureDir(config_1.cfg.MIGRATIONS_DIR);
         yield ensureDir(config_1.cfg.SEEDS_DIR);
@@ -112,7 +112,7 @@ function init() {
         yield ensureFile(`${config_1.cfg.MIGRATIONS_DIR}/.gitkeep`);
         yield ensureFile(`${config_1.cfg.SEEDS_DIR}/.gitkeep`);
         yield ensureFile(constants_1.PURPLEKIT_CONFIG_TS, template);
-        (0, print_1.print)('initialized');
+        (0, print_1.print)('Purplekit workspace initialized.');
     });
 }
 //# sourceMappingURL=init.js.map

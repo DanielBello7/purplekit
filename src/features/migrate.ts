@@ -286,15 +286,15 @@ async function migrate(args: MIGRATE) {
     }
 
     if (response.migrated) {
-      print('Migrations run successfully');
+      print('Migrations completed successfully.');
       process.exit(0);
     }
 
-    print(`Migrations didn't run: ${response.status}`);
+    print(`No migrations were run: ${response.status}.`);
     process.exit(0);
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Unable to serialize error';
-    printf(msg);
+    printf(`Failed to run migrations: ${msg}`);
     process.exit(1);
   }
 }

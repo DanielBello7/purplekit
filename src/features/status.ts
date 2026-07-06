@@ -198,8 +198,8 @@ const status = async (args: DB_STATUS) => {
     print(JSON.stringify(response, null, 2));
     process.exit(0);
   } catch (e) {
-    const msg = e instanceof Error ? e.message : 'Unable to Serialize';
-    printf(`Error occurred: ${msg}`);
+    const msg = e instanceof Error ? e.message : 'Unable to serialize error';
+    printf(`Failed to check status: ${msg}`);
     process.exit(1);
   }
 };

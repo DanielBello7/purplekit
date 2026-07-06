@@ -46,8 +46,8 @@ describe('init feature', () => {
     }
 
     assert.equal(logs.length, 2);
-    assert.match(logs[0] ?? '', /initializing app/);
-    assert.match(logs[1] ?? '', /initialized/);
+    assert.match(logs[0] ?? '', /Creating Purplekit workspace/);
+    assert.match(logs[1] ?? '', /Purplekit workspace initialized/);
   });
 
   it('creates the default configuration file inside the purplekit folder', async () => {

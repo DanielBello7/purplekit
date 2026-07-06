@@ -56,7 +56,7 @@ async function ensureFile(path: string, content: string = '') {
  * Existing files are preserved so the command can be rerun safely.
  */
 async function init() {
-  print('initializing app');
+  print('Creating Purplekit workspace...');
   await ensureDir(cfg.ROOT);
   await ensureDir(cfg.MIGRATIONS_DIR);
   await ensureDir(cfg.SEEDS_DIR);
@@ -66,7 +66,7 @@ async function init() {
   await ensureFile(`${cfg.SEEDS_DIR}/.gitkeep`);
 
   await ensureFile(PURPLEKIT_CONFIG_TS, template);
-  print('initialized');
+  print('Purplekit workspace initialized.');
 }
 
 export { init };

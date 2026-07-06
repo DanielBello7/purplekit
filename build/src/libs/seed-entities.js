@@ -34,7 +34,7 @@ function seedEntities(ds, entity, records, label) {
             yield repo.save(record);
             added++;
         }
-        (0, print_1.print)(`Total ${label}: ${records.length}. Seeded ${added} ${label} (skipped ${skipped} existing).`);
+        (0, print_1.print)(`Seeded ${label}: ${added} added, ${skipped} skipped, ${records.length} total.`);
     });
 }
 //# sourceMappingURL=seed-entities.js.map

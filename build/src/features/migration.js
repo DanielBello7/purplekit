@@ -82,8 +82,8 @@ function apply(all) {
                 applied: false,
                 generated: false,
                 msg: response.more.reason === 'duplicate-found'
-                    ? `Duplicate migration found: ${response.more.duplicateOf}`
-                    : 'No changes have been made to the schema files',
+                    ? `Duplicate migration found: ${response.more.duplicateOf}.`
+                    : 'No schema changes detected. Migration generation skipped.',
             };
         }
         yield (0, gen_1.saveMig)(response.more.location, response.more.content);
@@ -93,9 +93,17 @@ function apply(all) {
                 : yield (0, migrate_1.runMigrationByName)(response.more.title, database);
             if (!ans.migrated) {
                 yield removeMig(response.more.location);
-                return { generated: true, applied: false, msg: 'Nothing to migrate' };
+                return {
+                    generated: true,
+                    applied: false,
+                    msg: 'No migrations were run.',
+                };
             }
-            return { generated: true, applied: true, msg: 'migrated' };
+            return {
+                generated: true,
+                applied: true,
+                msg: 'Migration completed successfully.',
+            };
         }
         catch (e) {
             yield removeMig(response.more.location);
@@ -120,7 +128,7 @@ function migration(args) {
         }
         catch (e) {
             const msg = e instanceof Error ? e.message : JSON.stringify(e);
-            (0, print_1.printf)(msg);
+            (0, print_1.printf)(`Failed to apply migration: ${msg}`);
             process.exit(1);
         }
     });

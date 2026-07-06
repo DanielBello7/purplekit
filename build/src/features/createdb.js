@@ -65,14 +65,14 @@ function createdb(args) {
         try {
             const response = yield create(name);
             if (response.status === 'created') {
-                (0, print_1.print)(`Database '${name}' created successfully`);
+                (0, print_1.print)(`Database '${name}' created successfully.`);
             }
             else
-                (0, print_1.print)(`Database '${name}' already exists`);
+                (0, print_1.print)(`Database '${name}' already exists.`);
         }
         catch (e) {
             const err = e instanceof Error ? e.message : 'Unable to serialize error';
-            (0, print_1.printf)(`Error creating database '${name}': ${err}`);
+            (0, print_1.printf)(`Failed to create database '${name}': ${err}`);
             process.exit(1);
         }
     });

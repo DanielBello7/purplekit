@@ -56,11 +56,11 @@ async function createdb(args: CREATE_DB) {
     const response = await create(name);
 
     if (response.status === 'created') {
-      print(`Database '${name}' created successfully`);
-    } else print(`Database '${name}' already exists`);
+      print(`Database '${name}' created successfully.`);
+    } else print(`Database '${name}' already exists.`);
   } catch (e) {
     const err = e instanceof Error ? e.message : 'Unable to serialize error';
-    printf(`Error creating database '${name}': ${err}`);
+    printf(`Failed to create database '${name}': ${err}`);
     process.exit(1);
   }
 }

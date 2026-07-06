@@ -315,15 +315,15 @@ function migrate(args) {
                 response = yield runMigrationByName(args.name, database);
             }
             if (response.migrated) {
-                (0, print_1.print)('Migrations run successfully');
+                (0, print_1.print)('Migrations completed successfully.');
                 process.exit(0);
             }
-            (0, print_1.print)(`Migrations didn't run: ${response.status}`);
+            (0, print_1.print)(`No migrations were run: ${response.status}.`);
             process.exit(0);
         }
         catch (e) {
             const msg = e instanceof Error ? e.message : 'Unable to serialize error';
-            (0, print_1.printf)(msg);
+            (0, print_1.printf)(`Failed to run migrations: ${msg}`);
             process.exit(1);
         }
     });

@@ -42,8 +42,8 @@ async function apply(all?: boolean): Promise<ApplyReturn> {
       generated: false,
       msg:
         response.more.reason === 'duplicate-found'
-          ? `Duplicate migration found: ${response.more.duplicateOf}`
-          : 'No changes have been made to the schema files',
+          ? `Duplicate migration found: ${response.more.duplicateOf}.`
+          : 'No schema changes detected. Migration generation skipped.',
     };
   }
 
@@ -56,10 +56,18 @@ async function apply(all?: boolean): Promise<ApplyReturn> {
 
     if (!ans.migrated) {
       await removeMig(response.more.location);
-      return { generated: true, applied: false, msg: 'Nothing to migrate' };
+      return {
+        generated: true,
+        applied: false,
+        msg: 'No migrations were run.',
+      };
     }
 
-    return { generated: true, applied: true, msg: 'migrated' };
+    return {
+      generated: true,
+      applied: true,
+      msg: 'Migration completed successfully.',
+    };
   } catch (e) {
     await removeMig(response.more.location);
     throw e;
@@ -79,7 +87,7 @@ async function migration(args: MIGRATION) {
     process.exit(0);
   } catch (e) {
     const msg = e instanceof Error ? e.message : JSON.stringify(e);
-    printf(msg);
+    printf(`Failed to apply migration: ${msg}`);
     process.exit(1);
   }
 }

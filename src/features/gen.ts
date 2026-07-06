@@ -204,7 +204,7 @@ const gen = async (args: GENERATE_MIGRATIONS) => {
   const name = args.name ? sanitize(args.name) : undefined;
 
   try {
-    print(`Generating migration for ${database}...`);
+    print(`Generating migration for '${database}'...`);
     const response = await generate({
       force: args.force,
       db: database,
@@ -213,19 +213,19 @@ const gen = async (args: GENERATE_MIGRATIONS) => {
     });
     if (!response.generated) {
       if (response.more.reason === 'no-changes') {
-        print('No schema changes detected — skipping migration generation');
+        print('No schema changes detected. Migration generation skipped.');
       } else if (response.more.reason === 'duplicate-found') {
-        printf(`Duplicate migration found: ${response.more.duplicateOf}`);
+        printf(`Duplicate migration found: ${response.more.duplicateOf}.`);
       } else throw new Error('Unknown generated response');
     } else {
       print(
-        `Migration for ${database} created successfully: ${response.more.title}`,
+        `Migration for '${database}' created successfully: ${response.more.title}.`,
       );
     }
     process.exit(0);
   } catch (e) {
     const err = e instanceof Error ? e.message : JSON.stringify(e);
-    printf(`Migration generation failed: ${err}`);
+    printf(`Failed to generate migration: ${err}`);
     process.exit(1);
   }
 };

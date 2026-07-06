@@ -45,12 +45,12 @@ export async function seed(args: SEED) {
   try {
     const seeds: (new () => Seeder)[] = cfg.SEEDS;
     const response = await seeder(seeds, args.db);
-    if (!response) throw new Error('unable to complete seeding');
-    print('Seeding complete');
+    if (!response) throw new Error('Unable to complete seeding');
+    print('Seeding completed successfully.');
     process.exit(0);
   } catch (e) {
     const msg = e instanceof Error ? e.message : JSON.stringify(e);
-    printf(msg);
+    printf(`Failed to run seeders: ${msg}`);
     process.exit(1);
   }
 }

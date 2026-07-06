@@ -41,12 +41,12 @@ async function dropdb(args: DROP_DB) {
   try {
     const response = await drop(name);
     const msg = response.dropped
-      ? `Database '${name}' dropped successfully`
-      : `Couldn't drop Database '${name}'`;
+      ? `Database '${name}' dropped successfully.`
+      : `Database '${name}' was not dropped.`;
     print(msg);
   } catch (e) {
     const err = e instanceof Error ? e.message : 'Unable to serialize err';
-    printf(`Error dropping '${name}': ${err}`);
+    printf(`Failed to drop database '${name}': ${err}`);
     process.exit(1);
   }
 }

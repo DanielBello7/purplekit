@@ -56,13 +56,13 @@ function dropdb(args) {
         try {
             const response = yield drop(name);
             const msg = response.dropped
-                ? `Database '${name}' dropped successfully`
-                : `Couldn't drop Database '${name}'`;
+                ? `Database '${name}' dropped successfully.`
+                : `Database '${name}' was not dropped.`;
             (0, print_1.print)(msg);
         }
         catch (e) {
             const err = e instanceof Error ? e.message : 'Unable to serialize err';
-            (0, print_1.printf)(`Error dropping '${name}': ${err}`);
+            (0, print_1.printf)(`Failed to drop database '${name}': ${err}`);
             process.exit(1);
         }
     });
