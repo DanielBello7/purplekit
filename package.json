@@ -57,6 +57,7 @@
     "mocha": "^11.7.6",
     "pg": "^8.21.0",
     "resolve-tspaths": "^0.8.23",
+    "sctree-cli": "^1.1.0",
     "tsc-alias": "^1.8.17",
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.22.4",

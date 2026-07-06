@@ -1,0 +1,133 @@
+purplekit
+├─ .gitignore
+├─ .mocharc.json
+├─ .personal-notes.md
+├─ .sctreeignore
+├─ package.json
+├─ pnpm-lock.yaml
+├─ pnpm-workspace.yaml
+├─ prettier.config.mjs
+├─ README.md
+├─ sctree.config.json
+├─ tsconfig.build.json
+├─ tsconfig.json
+├─ .github
+│  ├─ .gitkeep
+│  └─ workflows
+│     ├─ github-deploy.yml
+│     └─ npm-publish.yml
+├─ .vscode
+│  ├─ launch.json
+│  └─ settings.json
+├─ bin
+│  └─ purplekit
+├─ docs
+│  ├─ .gitignore
+│  ├─ eslint.config.js
+│  ├─ index.html
+│  ├─ package.json
+│  ├─ README.md
+│  ├─ tsconfig.app.json
+│  ├─ tsconfig.json
+│  ├─ tsconfig.node.json
+│  ├─ vite.config.ts
+│  ├─ .hide
+│  │  ├─ .gitkeep
+│  │  ├─ purplekit
+│  │  │  ├─ .gitkeep
+│  │  │  ├─ migrations
+│  │  │  └─ seeds
+│  │  │     ├─ .gitkeep
+│  │  │     ├─ comments
+│  │  │     │  ├─ comments.seed.ts
+│  │  │     │  └─ comments.seeder.ts
+│  │  │     ├─ helpers
+│  │  │     │  ├─ common.ts
+│  │  │     │  └─ ids.ts
+│  │  │     ├─ posts
+│  │  │     │  ├─ posts.seed.ts
+│  │  │     │  └─ posts.seeder.ts
+│  │  │     └─ users
+│  │  │        ├─ users.seed.ts
+│  │  │        └─ users.seeder.ts
+│  │  └─ src
+│  │     ├─ .gitkeep
+│  │     ├─ schema
+│  │     │  ├─ comment.schema.ts
+│  │     │  ├─ post.schema.ts
+│  │     │  └─ user.schema.ts
+│  │     └─ types
+│  │        ├─ base.ts
+│  │        ├─ comment.ts
+│  │        ├─ post.ts
+│  │        └─ user.ts
+│  ├─ public
+│  └─ src
+│     ├─ App.tsx
+│     ├─ index.css
+│     ├─ main.tsx
+│     ├─ assets
+│     │  ├─ hero.png
+│     │  ├─ react.svg
+│     │  └─ vite.svg
+│     ├─ components
+│     │  ├─ .gitkeep
+│     │  ├─ code-block.tsx
+│     │  ├─ docs-layout.tsx
+│     │  ├─ page-header.tsx
+│     │  └─ section.tsx
+│     ├─ content
+│     │  └─ docs.ts
+│     ├─ pages
+│     │  ├─ api.tsx
+│     │  ├─ commands.tsx
+│     │  ├─ config.tsx
+│     │  ├─ example.tsx
+│     │  ├─ home.tsx
+│     │  └─ not-found.tsx
+│     └─ routes
+│        ├─ .gitkeep
+│        └─ index.tsx
+├─ src
+│  ├─ app.ts
+│  ├─ index.ts
+│  ├─ types.ts
+│  ├─ config
+│  │  ├─ constants.ts
+│  │  └─ index.ts
+│  ├─ features
+│  │  ├─ createdb.ts
+│  │  ├─ dropdb.ts
+│  │  ├─ gen.ts
+│  │  ├─ index.ts
+│  │  ├─ init.ts
+│  │  ├─ migrate.ts
+│  │  ├─ migration.ts
+│  │  ├─ seed.ts
+│  │  └─ status.ts
+│  └─ libs
+│     ├─ compare-mig.ts
+│     ├─ create-ds.ts
+│     ├─ get-commands.ts
+│     ├─ paths.ts
+│     ├─ print.ts
+│     ├─ sanitize.ts
+│     └─ seed-entities.ts
+└─ tests
+   ├─ container.ts
+   ├─ helpers
+   │  ├─ migration-gen.ts
+   │  └─ schema-builder.ts
+   └─ modules
+      ├─ compare-mig.spec.ts
+      ├─ create-ds.spec.ts
+      ├─ gen.spec.ts
+      ├─ get-commands.spec.ts
+      ├─ init.spec.ts
+      ├─ migrate.spec.ts
+      ├─ migration.spec.ts
+      ├─ paths.spec.ts
+      ├─ postgres-container.spec.ts
+      ├─ sanitize.spec.ts
+      ├─ seed-entities.spec.ts
+      └─ status.spec.ts

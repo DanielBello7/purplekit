@@ -1,0 +1,6 @@
+{
+  "filesystem": {
+    "applyOnAdd": false,
+    "applyOnRemove": false
+  }
+}

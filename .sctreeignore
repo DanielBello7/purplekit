@@ -1,0 +1,9 @@
+# Folders and files ignored by `sctree scan` and `sctree update`.
+.git
+.DS_Store
+.out
+node_modules
+dist
+build
+coverage
+.pnpm-store
