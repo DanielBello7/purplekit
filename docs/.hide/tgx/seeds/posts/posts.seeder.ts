@@ -5,7 +5,7 @@ import { Seeder } from 'typeorm-extension';
 import { postSeeds } from './posts.seed';
 
 class PostSeeder implements Seeder {
-  run(ds: DataSource): Promise<any> {
+  run(ds: DataSource): Promise<void> {
     return seedEntities(ds, Post, postSeeds, 'posts');
   }
 }

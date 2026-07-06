@@ -5,7 +5,7 @@ import { Seeder } from 'typeorm-extension';
 import { commentSeeds } from './comments.seed';
 
 class CommentSeeder implements Seeder {
-  run(ds: DataSource): Promise<any> {
+  run(ds: DataSource): Promise<void> {
     return seedEntities(ds, Comment, commentSeeds, 'comments');
   }
 }
