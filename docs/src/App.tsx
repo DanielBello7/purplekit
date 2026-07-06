@@ -4,11 +4,13 @@ import { AppRoutes } from './routes';
 
 function App() {
   return (
-    <BrowserRouter>
-      <DocsLayout>
-        <AppRoutes />
-      </DocsLayout>
-    </BrowserRouter>
+    <div className="w-full h-screen">
+      <BrowserRouter>
+        <DocsLayout>
+          <AppRoutes />
+        </DocsLayout>
+      </BrowserRouter>
+    </div>
   );
 }
 

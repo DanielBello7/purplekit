@@ -54,10 +54,10 @@ const sanitize_1 = require("../libs/sanitize");
 const compare_mig_1 = require("../libs/compare-mig");
 Object.defineProperty(exports, "compareMig", { enumerable: true, get: function () { return compare_mig_1.compareMig; } });
 const migrate_1 = require("./migrate");
+const paths_1 = require("../libs/paths");
 const prettier_1 = __importDefault(require("prettier"));
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
-const paths_1 = require("../libs/paths");
 /**
  * Detects pending schema changes by diffing entities against the database.
  *
@@ -211,8 +211,8 @@ const gen = (args) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         (0, print_1.print)(`Generating migration for ${database}...`);
         const response = yield generate({
-            db: database,
             force: args.force,
+            db: database,
             name: name,
             save: true,
         });

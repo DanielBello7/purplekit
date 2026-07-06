@@ -16,9 +16,9 @@ export const CommandsPage = () => {
           {commands.map(([name, description]) => (
             <div
               key={name}
-              className="grid gap-3 p-4 md:grid-cols-[160px_1fr] md:items-center"
+              className="grid min-w-0 gap-3 p-4 md:grid-cols-[180px_1fr] md:items-center"
             >
-              <code className="w-fit rounded bg-slate-100 px-2 py-1 font-mono text-sm text-slate-950">
+              <code className="w-fit max-w-full overflow-x-auto rounded bg-slate-100 px-2 py-1 font-mono text-xs text-slate-950 sm:text-sm">
                 npx tgx {name}
               </code>
               <p className="text-slate-600">{description}</p>
