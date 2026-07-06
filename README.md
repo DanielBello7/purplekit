@@ -100,4 +100,4 @@ import { seedEntities } from 'purplekit';
 ## Documentation
 
 The README is intentionally compact. Full guides, examples, and command details
-belong in the docs web app.
+belong in the docs web app: https://purplekit.vercel.app.

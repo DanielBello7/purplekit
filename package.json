@@ -1,10 +1,14 @@
 {
   "name": "purplekit",
   "version": "1.0.1",
-  "description": "",
+  "description": "Opinionated TypeORM database tooling for migrations, status checks, and seeders.",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git+https://github.com/DanielBello7/purplekit.git"
+  },
+  "homepage": "https://purplekit.vercel.app",
+  "bugs": {
+    "url": "https://github.com/DanielBello7/purplekit/issues"
   },
   "bin": {
     "purplekit": "./bin/purplekit"
@@ -30,8 +34,17 @@
     "dev": "tsx src/app.ts",
     "purplekit": "node build/src/app.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "typeorm",
+    "migrations",
+    "database",
+    "seeding",
+    "cli",
+    "postgres",
+    "mysql",
+    "mssql"
+  ],
+  "author": "Daniel Bello",
   "license": "ISC",
   "packageManager": "pnpm@10.15.0",
   "devDependencies": {
