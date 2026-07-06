@@ -88,7 +88,7 @@ describe('gen feature', () => {
 
   describe('saveMig', () => {
     it('creates the migration directory recursively', async () => {
-      const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tgx-save-'));
+      const root = await fs.mkdtemp(path.join(os.tmpdir(), 'purplekit-save-'));
       const location = path.join(
         root,
         'NestedMigration1000000000001',
@@ -103,7 +103,7 @@ describe('gen feature', () => {
     });
 
     it('writes the migration content to migration.ts', async () => {
-      const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tgx-save-'));
+      const root = await fs.mkdtemp(path.join(os.tmpdir(), 'purplekit-save-'));
       const location = path.join(
         root,
         'NestedMigration1000000000001',

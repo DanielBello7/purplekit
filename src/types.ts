@@ -32,7 +32,7 @@ export type SEED = {
   db?: string;
 };
 
-export type TGX_CONFIGURATIONS = {
+export type PURPLEKIT_CONFIGURATIONS = {
   TYPE: DataSourceOptions['type'];
   ENTITIES: MixedList<string | Function | EntitySchema<any>>;
   SEEDS: (new () => Seeder)[];
@@ -50,7 +50,7 @@ export type TGX_CONFIGURATIONS = {
   INITIAL_DATABASE: string;
 };
 
-export type TGX_INTERNAL_CONFIGURATIONS = TGX_CONFIGURATIONS & {
+export type PURPLEKIT_INTERNAL_CONFIGURATIONS = PURPLEKIT_CONFIGURATIONS & {
   ROOT: string;
   MIGRATIONS_DIR: string;
   SEEDS_DIR: string;

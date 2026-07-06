@@ -5,7 +5,7 @@ import { doesDbExists } from '@/features/status';
 import { cfg } from '@/config';
 import { PostgresTestContainer } from '../container';
 
-const runContainerTests = process.env.TGX_PG_CONTAINER_TESTS === '1';
+const runContainerTests = process.env.PURPLEKIT_PG_CONTAINER_TESTS === '1';
 const describeContainer = runContainerTests ? describe : describe.skip;
 
 describeContainer('postgres container integration', function () {
@@ -41,7 +41,7 @@ describeContainer('postgres container integration', function () {
   });
 
   it('creates, detects, and drops a database through the feature helpers', async () => {
-    const name = 'tgx_container_createdb';
+    const name = 'purplekit_container_createdb';
 
     await drop(name);
 

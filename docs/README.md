@@ -1,6 +1,6 @@
-# TGX Docs
+# Purplekit Docs
 
-This is the documentation web app for TGX. It is a separate Vite app inside the
+This is the documentation web app for Purplekit. It is a separate Vite app inside the
 main repository so the package README can stay compact while the full guides,
 examples, and command references live here.
 
@@ -43,11 +43,11 @@ src/
 
 ## Example Source
 
-The `docs/.hide` folder contains a small TGX example project. The docs use it as
+The `docs/.hide` folder contains a small Purplekit example project. The docs use it as
 the source of truth for realistic schema and seeding examples, including users,
 posts, comments, and `seedEntities` usage.
 
 ## Publishing
 
-The docs app is not included in the TGX npm package. It should be built and
+The docs app is not included in the Purplekit npm package. It should be built and
 deployed separately as the public documentation site.

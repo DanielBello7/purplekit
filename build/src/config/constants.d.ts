@@ -1,8 +1,8 @@
-declare const TGX_ROOT = "tgx";
-declare const TGX_CONFIG_TS = "tgx/tgx.config.ts";
-declare const TGX_CONFIG_JS = "tgx/tgx.config.js";
-declare const TGX_MIGRATIONS_DIR = "tgx/migrations";
-declare const TGX_SEEDS_DIR = "tgx/seeds";
-declare const TGX_MIGRATIONS_GLOB = "tgx/migrations/**/*.{ts,js}";
-export { TGX_CONFIG_JS, TGX_CONFIG_TS, TGX_MIGRATIONS_DIR, TGX_MIGRATIONS_GLOB, TGX_ROOT, TGX_SEEDS_DIR, };
+declare const PURPLEKIT_ROOT = "purplekit";
+declare const PURPLEKIT_CONFIG_TS = "purplekit/purplekit.config.ts";
+declare const PURPLEKIT_CONFIG_JS = "purplekit/purplekit.config.js";
+declare const PURPLEKIT_MIGRATIONS_DIR = "purplekit/migrations";
+declare const PURPLEKIT_SEEDS_DIR = "purplekit/seeds";
+declare const PURPLEKIT_MIGRATIONS_GLOB = "purplekit/migrations/**/*.{ts,js}";
+export { PURPLEKIT_CONFIG_JS, PURPLEKIT_CONFIG_TS, PURPLEKIT_MIGRATIONS_DIR, PURPLEKIT_MIGRATIONS_GLOB, PURPLEKIT_ROOT, PURPLEKIT_SEEDS_DIR, };
 //# sourceMappingURL=constants.d.ts.map

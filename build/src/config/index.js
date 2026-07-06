@@ -38,7 +38,7 @@ const constants_1 = require("./constants");
 const node_module_1 = require("node:module");
 const node_fs_1 = require("node:fs");
 const path = __importStar(require("node:path"));
-const requireConfig = (0, node_module_1.createRequire)(path.join(process.cwd(), 'tgx.config.cjs'));
+const requireConfig = (0, node_module_1.createRequire)(path.join(process.cwd(), 'purplekit.config.cjs'));
 const defaults = {
     ENTITIES: ['src/**/*.schema.ts'],
     SEEDS: [],
@@ -56,7 +56,7 @@ const defaults = {
     INITIAL_DATABASE: 'postgres',
 };
 /**
- * Loads the user-authored TGX config from the opinionated project config path.
+ * Loads the user-authored Purplekit config from the opinionated project config path.
  * Supports TypeScript and JavaScript config files and returns an empty object
  * when no config file has been initialized yet.
  *
@@ -64,7 +64,7 @@ const defaults = {
  */
 function loadUserConfig() {
     var _a;
-    for (const file of [constants_1.TGX_CONFIG_TS, constants_1.TGX_CONFIG_JS]) {
+    for (const file of [constants_1.PURPLEKIT_CONFIG_TS, constants_1.PURPLEKIT_CONFIG_JS]) {
         const location = path.resolve(process.cwd(), file);
         if (!(0, node_fs_1.existsSync)(location))
             continue;
@@ -74,6 +74,6 @@ function loadUserConfig() {
     return {};
 }
 const userConfig = loadUserConfig();
-const cfg = Object.assign(Object.assign(Object.assign({}, defaults), userConfig), { ROOT: constants_1.TGX_ROOT, MIGRATIONS_DIR: constants_1.TGX_MIGRATIONS_DIR, SEEDS_DIR: constants_1.TGX_SEEDS_DIR, MIGRATIONS: [constants_1.TGX_MIGRATIONS_GLOB] });
+const cfg = Object.assign(Object.assign(Object.assign({}, defaults), userConfig), { ROOT: constants_1.PURPLEKIT_ROOT, MIGRATIONS_DIR: constants_1.PURPLEKIT_MIGRATIONS_DIR, SEEDS_DIR: constants_1.PURPLEKIT_SEEDS_DIR, MIGRATIONS: [constants_1.PURPLEKIT_MIGRATIONS_GLOB] });
 exports.cfg = cfg;
 //# sourceMappingURL=index.js.map

@@ -2,7 +2,7 @@ import { cfg } from '@/config';
 import path from 'path';
 
 /**
- * Returns the opinionated migrations root used by TGX.
+ * Returns the opinionated migrations root used by Purplekit.
  *
  * @returns Configured migrations directory.
  */

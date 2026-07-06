@@ -1,16 +1,16 @@
-# TGX
+# Purplekit
 
 TypeORM database tooling with a small, opinionated CLI.
 
-TGX gives TypeORM projects a predictable workflow for creating databases,
+Purplekit gives TypeORM projects a predictable workflow for creating databases,
 generating migrations, applying migrations, checking status, and running seeders.
-It stores project artifacts under `tgx/` so migration and seed files stay grouped
+It stores project artifacts under `purplekit/` so migration and seed files stay grouped
 away from application code.
 
 ## Install
 
 ```bash
-npm install tgx typeorm reflect-metadata
+npm install purplekit typeorm reflect-metadata
 ```
 
 Install the database driver your project needs, for example:
@@ -22,51 +22,51 @@ npm install pg
 ## Quick Start
 
 ```bash
-npx tgx init
+npx purplekit init
 ```
 
 This creates:
 
 ```text
-tgx/
+purplekit/
   migrations/
   seeds/
-  tgx.config.ts
+  purplekit.config.ts
 ```
 
-Edit `tgx/tgx.config.ts` with your TypeORM connection options, entities, and
+Edit `purplekit/purplekit.config.ts` with your TypeORM connection options, entities, and
 seed classes.
 
 ## Commands
 
 ```bash
-npx tgx createdb
-npx tgx dropdb
-npx tgx status
-npx tgx gen --name CreateUsers
-npx tgx migrate
-npx tgx migration
-npx tgx seed
+npx purplekit createdb
+npx purplekit dropdb
+npx purplekit status
+npx purplekit gen --name CreateUsers
+npx purplekit migrate
+npx purplekit migration
+npx purplekit seed
 ```
 
 Useful options:
 
 ```bash
-npx tgx createdb --name app_dev
-npx tgx dropdb --name app_dev
-npx tgx status --name app_dev
-npx tgx gen --name CreateUsers --force
-npx tgx migrate --name CreateUsers1780000000000
-npx tgx migrate --file tgx/migrations/CreateUsers1780000000000/migration.ts
-npx tgx seed --db app_dev
+npx purplekit createdb --name app_dev
+npx purplekit dropdb --name app_dev
+npx purplekit status --name app_dev
+npx purplekit gen --name CreateUsers --force
+npx purplekit migrate --name CreateUsers1780000000000
+npx purplekit migrate --file purplekit/migrations/CreateUsers1780000000000/migration.ts
+npx purplekit seed --db app_dev
 ```
 
 ## Config
 
 ```ts
-import type { TGX_CONFIGURATIONS } from 'tgx';
+import type { PURPLEKIT_CONFIGURATIONS } from 'purplekit';
 
-const config: TGX_CONFIGURATIONS = {
+const config: PURPLEKIT_CONFIGURATIONS = {
   ENTITIES: ['src/**/*.schema.ts'],
   SEEDS: [],
 
@@ -91,8 +91,8 @@ export default config;
 ## Public API
 
 ```ts
-import type { TGX_CONFIGURATIONS } from 'tgx';
-import { seedEntities } from 'tgx';
+import type { PURPLEKIT_CONFIGURATIONS } from 'purplekit';
+import { seedEntities } from 'purplekit';
 ```
 
 `seedEntities` is provided for building reusable seed classes.

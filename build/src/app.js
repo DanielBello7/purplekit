@@ -5,9 +5,9 @@ const commander_1 = require("commander");
 const features_1 = require("./features");
 // initialize the desc and info of the app
 commander_1.program
-    .name('tgx')
+    .name('purplekit')
     .description('typeorm database actions wrapper')
-    .version('1.0.0', '-v, --cli-version', 'Output the tgx CLI version.');
+    .version('1.0.0', '-v, --cli-version', 'Output the purplekit CLI version.');
 // create core parts
 commander_1.program
     .command('init')
@@ -50,7 +50,7 @@ commander_1.program
     .description('Execute already existing migration files')
     .option('--name <name>', 'Migration basename/class name without .ts')
     .option('--db <database>', 'Database which migration should be applied to')
-    .option('--file <file>', 'The path to the migration file to be executed eg. tgx/migrations/Mig1234563534')
+    .option('--file <file>', 'The path to the migration file to be executed eg. purplekit/migrations/Mig1234563534')
     .action((args) => (0, features_1.migrate)(args));
 // run the whole migration process
 commander_1.program

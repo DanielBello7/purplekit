@@ -51,7 +51,7 @@ describe('compare-mig library', () => {
     });
 
     it('returns null when no existing migration has the same normalized up queries', async () => {
-      const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tgx-compare-'));
+      const root = await fs.mkdtemp(path.join(os.tmpdir(), 'purplekit-compare-'));
       const existingFile = path.join(root, 'Mig1000000000001', 'migration.ts');
       await fs.mkdir(path.dirname(existingFile), { recursive: true });
       await fs.writeFile(
@@ -74,7 +74,7 @@ describe('compare-mig library', () => {
     });
 
     it('returns duplicate metadata when an existing migration has the same normalized up queries', async () => {
-      const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tgx-compare-'));
+      const root = await fs.mkdtemp(path.join(os.tmpdir(), 'purplekit-compare-'));
       const existingFile = path.join(root, 'Mig1000000000001', 'migration.ts');
       await fs.mkdir(path.dirname(existingFile), { recursive: true });
       await fs.writeFile(
@@ -107,7 +107,7 @@ describe('compare-mig library', () => {
     });
 
     it('does not treat a migration with extra up-query content as a duplicate', async () => {
-      const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tgx-compare-'));
+      const root = await fs.mkdtemp(path.join(os.tmpdir(), 'purplekit-compare-'));
       const existingFile = path.join(root, 'Mig1000000000001', 'migration.ts');
       await fs.mkdir(path.dirname(existingFile), { recursive: true });
       await fs.writeFile(

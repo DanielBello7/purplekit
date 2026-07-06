@@ -17,7 +17,7 @@ export const DocsLayout = ({ children }: DocsLayoutProps) => {
               className="flex items-center justify-between gap-4 lg:block"
             >
               <p className="text-xl font-semibold text-slate-950 lg:text-2xl">
-                TGX
+                Purplekit
               </p>
               <p className="hidden text-right text-xs leading-5 text-slate-500 sm:block lg:mt-1 lg:text-left lg:text-sm lg:leading-6">
                 TypeORM database actions wrapper

@@ -7,7 +7,7 @@ export const ApiPage = () => {
   return (
     <>
       <PageHeader eyebrow="Public API" title="A small package surface.">
-        TGX exports the CLI feature handlers for programmatic use, the public
+        Purplekit exports the CLI feature handlers for programmatic use, the public
         config type, and seedEntities for seed files.
       </PageHeader>
 

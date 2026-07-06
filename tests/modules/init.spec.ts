@@ -22,7 +22,7 @@ describe('init feature', () => {
   beforeEach(async () => {
     cwd = process.cwd();
     originalLog = console.log;
-    root = await fs.mkdtemp(path.join(os.tmpdir(), 'tgx-init-'));
+    root = await fs.mkdtemp(path.join(os.tmpdir(), 'purplekit-init-'));
     process.chdir(root);
   });
 
@@ -50,39 +50,39 @@ describe('init feature', () => {
     assert.match(logs[1] ?? '', /initialized/);
   });
 
-  it('creates the default configuration file inside the tgx folder', async () => {
+  it('creates the default configuration file inside the purplekit folder', async () => {
     await silenceLogs(init);
 
-    const content = await fs.readFile('tgx/tgx.config.ts', 'utf-8');
-    assert.match(content, /TGX_CONFIGURATIONS/);
+    const content = await fs.readFile('purplekit/purplekit.config.ts', 'utf-8');
+    assert.match(content, /PURPLEKIT_CONFIGURATIONS/);
     assert.match(content, /SEEDS: \[\]/);
   });
 
   it('does not overwrite an existing configuration file', async () => {
-    await fs.mkdir('tgx', { recursive: true });
-    await fs.writeFile('tgx/tgx.config.ts', 'const custom = true;\n');
+    await fs.mkdir('purplekit', { recursive: true });
+    await fs.writeFile('purplekit/purplekit.config.ts', 'const custom = true;\n');
 
     await silenceLogs(init);
 
     assert.equal(
-      await fs.readFile('tgx/tgx.config.ts', 'utf-8'),
+      await fs.readFile('purplekit/purplekit.config.ts', 'utf-8'),
       'const custom = true;\n',
     );
   });
 
-  it('creates the opinionated tgx directories', async () => {
+  it('creates the opinionated purplekit directories', async () => {
     await silenceLogs(init);
 
-    assert.equal((await fs.stat('tgx')).isDirectory(), true);
-    assert.equal((await fs.stat('tgx/migrations')).isDirectory(), true);
-    assert.equal((await fs.stat('tgx/seeds')).isDirectory(), true);
+    assert.equal((await fs.stat('purplekit')).isDirectory(), true);
+    assert.equal((await fs.stat('purplekit/migrations')).isDirectory(), true);
+    assert.equal((await fs.stat('purplekit/seeds')).isDirectory(), true);
   });
 
-  it('creates placeholder files required for empty tgx folders', async () => {
+  it('creates placeholder files required for empty purplekit folders', async () => {
     await silenceLogs(init);
 
-    await fs.access('tgx/.gitkeep');
-    await fs.access('tgx/migrations/.gitkeep');
-    await fs.access('tgx/seeds/.gitkeep');
+    await fs.access('purplekit/.gitkeep');
+    await fs.access('purplekit/migrations/.gitkeep');
+    await fs.access('purplekit/seeds/.gitkeep');
   });
 });

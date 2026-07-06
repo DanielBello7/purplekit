@@ -9,7 +9,7 @@ exports.getMigrationRoot = getMigrationRoot;
 const config_1 = require("../config");
 const path_1 = __importDefault(require("path"));
 /**
- * Returns the opinionated migrations root used by TGX.
+ * Returns the opinionated migrations root used by Purplekit.
  *
  * @returns Configured migrations directory.
  */

@@ -6,19 +6,19 @@ import { configExample } from '../content/docs';
 export const ConfigPage = () => {
   return (
     <>
-      <PageHeader eyebrow="Config" title="One project config, fixed TGX paths.">
-        TGX keeps folder paths internal. Your config describes the database,
+      <PageHeader eyebrow="Config" title="One project config, fixed Purplekit paths.">
+        Purplekit keeps folder paths internal. Your config describes the database,
         entities, SSL behavior, and seed classes.
       </PageHeader>
 
-      <Section title="tgx/tgx.config.ts">
+      <Section title="purplekit/purplekit.config.ts">
         <CodeBlock code={configExample} />
       </Section>
 
       <Section title="Opinionated internals">
         <p>
           ROOT, MIGRATIONS_DIR, SEEDS_DIR, and migration globs are not public
-          configuration. TGX owns them so commands always agree on where
+          configuration. Purplekit owns them so commands always agree on where
           migrations and seed artifacts live.
         </p>
       </Section>

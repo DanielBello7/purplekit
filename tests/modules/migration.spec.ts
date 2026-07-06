@@ -7,7 +7,7 @@ import * as path from 'node:path';
 describe('migration feature', () => {
   describe('removeMig', () => {
     it('removes the generated migration directory for a migration.ts location', async () => {
-      const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tgx-remove-'));
+      const root = await fs.mkdtemp(path.join(os.tmpdir(), 'purplekit-remove-'));
       const location = path.join(
         root,
         'CreateUsers1000000000001',
@@ -25,7 +25,7 @@ describe('migration feature', () => {
     });
 
     it('does not throw when the generated migration directory is already missing', async () => {
-      const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tgx-remove-'));
+      const root = await fs.mkdtemp(path.join(os.tmpdir(), 'purplekit-remove-'));
       const location = path.join(
         root,
         'CreateUsers1000000000001',

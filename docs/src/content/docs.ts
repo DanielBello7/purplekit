@@ -8,7 +8,7 @@ export const navItems: NavItem[] = [
   {
     to: '/',
     label: 'Start',
-    description: 'Install, initialize, and configure TGX.',
+    description: 'Install, initialize, and configure Purplekit.',
   },
   {
     to: '/commands',
@@ -33,7 +33,7 @@ export const navItems: NavItem[] = [
 ];
 
 export const commands = [
-  ['init', 'Create the opinionated tgx folder, config, migrations, and seeds.'],
+  ['init', 'Create the opinionated purplekit folder, config, migrations, and seeds.'],
   ['createdb', 'Create the configured database if it does not already exist.'],
   ['dropdb', 'Drop the configured database.'],
   [
@@ -42,7 +42,7 @@ export const commands = [
   ],
   [
     'gen',
-    'Generate a migration under tgx/migrations/<NameTimestamp>/migration.ts.',
+    'Generate a migration under purplekit/migrations/<NameTimestamp>/migration.ts.',
   ],
   [
     'migrate',
@@ -52,21 +52,21 @@ export const commands = [
   ['seed', 'Run configured typeorm-extension seed classes.'],
 ] as const;
 
-export const shellCommands = `npm install tgx typeorm reflect-metadata
+export const shellCommands = `npm install purplekit typeorm reflect-metadata
 npm install pg
 
-npx tgx init
-npx tgx createdb
-npx tgx gen --name CreateUsers
-npx tgx migrate
-npx tgx seed`;
+npx purplekit init
+npx purplekit createdb
+npx purplekit gen --name CreateUsers
+npx purplekit migrate
+npx purplekit seed`;
 
-export const configExample = `import type { TGX_CONFIGURATIONS } from 'tgx';
+export const configExample = `import type { PURPLEKIT_CONFIGURATIONS } from 'purplekit';
 import { UserSeeder } from './seeds/users/users.seeder';
 import { PostSeeder } from './seeds/posts/posts.seeder';
 import { CommentSeeder } from './seeds/comments/comments.seeder';
 
-const config: TGX_CONFIGURATIONS = {
+const config: PURPLEKIT_CONFIGURATIONS = {
   ENTITIES: ['src/**/*.schema.ts'],
   SEEDS: [UserSeeder, PostSeeder, CommentSeeder],
 
@@ -88,7 +88,7 @@ const config: TGX_CONFIGURATIONS = {
 export default config;`;
 
 export const seederExample = `import { User } from 'docs/src/schema/user.schema';
-import { seedEntities } from 'tgx';
+import { seedEntities } from 'purplekit';
 import { DataSource } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
 import { userSeeds } from './users.seed';
@@ -122,14 +122,14 @@ export const postSeedExample = `export const postSeeds: IPost[] = [
   }
 ];`;
 
-export const commandOptions = `npx tgx createdb --name app_dev
-npx tgx status --name app_dev
-npx tgx gen --name CreateUsers --force
-npx tgx migrate --name CreateUsers1780000000000
-npx tgx migrate --file tgx/migrations/CreateUsers1780000000000/migration.ts
-npx tgx seed --db app_dev`;
+export const commandOptions = `npx purplekit createdb --name app_dev
+npx purplekit status --name app_dev
+npx purplekit gen --name CreateUsers --force
+npx purplekit migrate --name CreateUsers1780000000000
+npx purplekit migrate --file purplekit/migrations/CreateUsers1780000000000/migration.ts
+npx purplekit seed --db app_dev`;
 
-export const apiExample = `import type { TGX_CONFIGURATIONS } from 'tgx';
+export const apiExample = `import type { PURPLEKIT_CONFIGURATIONS } from 'purplekit';
 import {
   createdb,
   dropdb,
@@ -140,4 +140,4 @@ import {
   seed,
   seedEntities,
   status,
-} from 'tgx';`;
+} from 'purplekit';`;

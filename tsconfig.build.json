@@ -1,4 +1,4 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["build", "node_modules", "tgx", "docs", "tests"]
+  "exclude": ["build", "node_modules", "purplekit", "docs", "tests"]
 }

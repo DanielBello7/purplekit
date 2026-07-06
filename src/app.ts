@@ -22,9 +22,9 @@ import {
 
 // initialize the desc and info of the app
 program
-  .name('tgx')
+  .name('purplekit')
   .description('typeorm database actions wrapper')
-  .version('1.0.0', '-v, --cli-version', 'Output the tgx CLI version.');
+  .version('1.0.0', '-v, --cli-version', 'Output the purplekit CLI version.');
 
 // create core parts
 program
@@ -79,7 +79,7 @@ program
   .option('--db <database>', 'Database which migration should be applied to')
   .option(
     '--file <file>',
-    'The path to the migration file to be executed eg. tgx/migrations/Mig1234563534',
+    'The path to the migration file to be executed eg. purplekit/migrations/Mig1234563534',
   )
   .action((args: MIGRATE) => migrate(args));
 

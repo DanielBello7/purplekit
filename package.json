@@ -1,5 +1,5 @@
 {
-  "name": "tgx",
+  "name": "purplekit",
   "version": "1.0.0",
   "description": "",
   "repository": {
@@ -7,7 +7,7 @@
     "url": ""
   },
   "bin": {
-    "tgx": "./bin/tgx"
+    "purplekit": "./bin/purplekit"
   },
   "main": "./build/src/index.js",
   "types": "./build/src/index.d.ts",
@@ -24,10 +24,11 @@
   ],
   "scripts": {
     "test": "mocha",
+    "test:build": "npm run build && npm test",
     "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "dev": "tsx src/app.ts",
-    "tgx": "node build/src/app.js"
+    "purplekit": "node build/src/app.js"
   },
   "keywords": [],
   "author": "",

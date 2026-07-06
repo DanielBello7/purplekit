@@ -47,9 +47,9 @@ const config_1 = require("../config");
 const constants_1 = require("../config/constants");
 const print_1 = require("../libs/print");
 const fs = __importStar(require("fs/promises"));
-const template = `import type { TGX_CONFIGURATIONS } from 'tgx';
+const template = `import type { PURPLEKIT_CONFIGURATIONS } from 'purplekit';
 
-const config: TGX_CONFIGURATIONS = {
+const config: PURPLEKIT_CONFIGURATIONS = {
   ENTITIES: ['src/**/*.schema.ts'],
   SEEDS: [],
 
@@ -99,7 +99,7 @@ function ensureFile(path_1) {
     });
 }
 /**
- * Creates TGX's opinionated project structure and starter config.
+ * Creates Purplekit's opinionated project structure and starter config.
  * Existing files are preserved so the command can be rerun safely.
  */
 function init() {
@@ -111,7 +111,7 @@ function init() {
         yield ensureFile(`${config_1.cfg.ROOT}/.gitkeep`);
         yield ensureFile(`${config_1.cfg.MIGRATIONS_DIR}/.gitkeep`);
         yield ensureFile(`${config_1.cfg.SEEDS_DIR}/.gitkeep`);
-        yield ensureFile(constants_1.TGX_CONFIG_TS, template);
+        yield ensureFile(constants_1.PURPLEKIT_CONFIG_TS, template);
         (0, print_1.print)('initialized');
     });
 }

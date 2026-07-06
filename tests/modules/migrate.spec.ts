@@ -20,7 +20,7 @@ describe('migrate feature', () => {
 
     beforeEach(async () => {
       cwd = process.cwd();
-      tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'tgx-migrate-'));
+      tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'purplekit-migrate-'));
       process.chdir(tempRoot);
       await fs.mkdir(fixtureDir, { recursive: true });
       await fs.writeFile(
@@ -72,7 +72,7 @@ describe('migrate feature', () => {
 
     beforeEach(async () => {
       cwd = process.cwd();
-      tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'tgx-mig-path-'));
+      tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'purplekit-mig-path-'));
       process.chdir(tempRoot);
       await fs.mkdir(path.join(cfg.MIGRATIONS_DIR, name), { recursive: true });
       await fs.writeFile(

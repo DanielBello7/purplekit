@@ -6,7 +6,7 @@ export const NotFoundPage = () => {
   return (
     <>
       <PageHeader eyebrow="Missing page" title="This route is not documented.">
-        The page you opened does not exist in the TGX docs.
+        The page you opened does not exist in the Purplekit docs.
       </PageHeader>
 
       <Section title="Continue">

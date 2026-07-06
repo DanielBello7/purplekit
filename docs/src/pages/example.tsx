@@ -8,7 +8,7 @@ export const ExamplePage = () => {
     <>
       <PageHeader eyebrow="Example Project" title="Users, posts, and comments.">
         The example in docs/.hide models a small content app with TypeORM
-        entities and TGX seeders. It is intentionally close to the way users
+        entities and Purplekit seeders. It is intentionally close to the way users
         would structure their own projects.
       </PageHeader>
 
@@ -38,7 +38,7 @@ export const ExamplePage = () => {
 
       <Section title="Seeder pattern">
         <p>
-          Seeders use the public seedEntities helper from TGX. The helper
+          Seeders use the public seedEntities helper from Purplekit. The helper
           inserts missing records and skips existing records by stable id.
         </p>
         <CodeBlock code={seederExample} />

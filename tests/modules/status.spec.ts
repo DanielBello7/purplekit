@@ -13,7 +13,7 @@ describe('status feature', () => {
 
     beforeEach(async () => {
       cwd = process.cwd();
-      tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'tgx-status-'));
+      tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'purplekit-status-'));
       process.chdir(tempRoot);
     });
 

@@ -1,4 +1,4 @@
-export type { TGX_CONFIGURATIONS } from './types';
+export type { PURPLEKIT_CONFIGURATIONS } from './types';
 export { seedEntities } from './libs/seed-entities';
 export {
   createdb,
