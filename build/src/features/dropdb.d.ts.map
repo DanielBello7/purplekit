@@ -1,0 +1,1 @@
+{"version":3,"file":"dropdb.d.ts","sourceRoot":"","sources":["../../../src/features/dropdb.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,OAAO,EAAE,MAAM,SAAS,CAAC;AAMlC;;;;;GAKG;AACH,iBAAe,IAAI,CAAC,IAAI,EAAE,MAAM,GAAG,OAAO,CAAC;IAAE,OAAO,EAAE,OAAO,CAAA;CAAE,CAAC,CAkB/D;AAED;;;;GAIG;AACH,iBAAe,MAAM,CAAC,IAAI,EAAE,OAAO,iBAalC;AAED,OAAO,EAAE,MAAM,EAAE,IAAI,EAAE,CAAC"}

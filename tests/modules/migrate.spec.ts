@@ -1,7 +1,12 @@
-import { getMigrationFiles, hasMigration } from '@/features/migrate';
+import {
+  getMigrationFiles,
+  getMigrationNameFromPath,
+  hasMigration,
+} from '@/features/migrate';
 import { cfg } from '@/config';
 import { strict as assert } from 'node:assert';
 import * as fs from 'node:fs/promises';
+import * as os from 'node:os';
 import * as path from 'node:path';
 
 describe('migrate feature', () => {
@@ -10,8 +15,13 @@ describe('migrate feature', () => {
     const fixtureName = 'SpecMigration1000000000001';
     const fixtureDir = path.join(root, fixtureName);
     const fixtureFile = path.join(fixtureDir, 'migration.ts');
+    let cwd: string;
+    let tempRoot: string;
 
     beforeEach(async () => {
+      cwd = process.cwd();
+      tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'tgx-migrate-'));
+      process.chdir(tempRoot);
       await fs.mkdir(fixtureDir, { recursive: true });
       await fs.writeFile(
         fixtureFile,
@@ -20,7 +30,8 @@ describe('migrate feature', () => {
     });
 
     afterEach(async () => {
-      await fs.rm(fixtureDir, { recursive: true, force: true });
+      process.chdir(cwd);
+      await fs.rm(tempRoot, { recursive: true, force: true });
     });
 
     it('lists migration directories under the configured migrations directory', async () => {
@@ -51,6 +62,63 @@ describe('migrate feature', () => {
       assert.equal(fixture.file, fixtureFile);
       assert.equal(fixture.parentPath, root);
       assert.equal(fixture.exists, true);
+    });
+  });
+
+  describe('getMigrationNameFromPath', () => {
+    let cwd: string;
+    let tempRoot: string;
+    const name = 'CreateUsers1000000000001';
+
+    beforeEach(async () => {
+      cwd = process.cwd();
+      tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'tgx-mig-path-'));
+      process.chdir(tempRoot);
+      await fs.mkdir(path.join(cfg.MIGRATIONS_DIR, name), { recursive: true });
+      await fs.writeFile(
+        path.join(cfg.MIGRATIONS_DIR, name, 'migration.ts'),
+        'export class CreateUsers1000000000001 {}',
+      );
+    });
+
+    afterEach(async () => {
+      process.chdir(cwd);
+      await fs.rm(tempRoot, { recursive: true, force: true });
+    });
+
+    it('accepts a migration directory path', () => {
+      const result = getMigrationNameFromPath(path.join(cfg.MIGRATIONS_DIR, name));
+
+      assert.equal(result.name, name);
+      assert.equal(
+        result.path,
+        path.join(cfg.MIGRATIONS_DIR, name, 'migration.ts'),
+      );
+    });
+
+    it('accepts a direct migration.ts path', () => {
+      const file = path.join(cfg.MIGRATIONS_DIR, name, 'migration.ts');
+
+      const result = getMigrationNameFromPath(file);
+
+      assert.deepEqual(result, { name, path: file });
+    });
+
+    it('rejects folder names that are not class-style timestamped migration names', () => {
+      assert.throws(
+        () => getMigrationNameFromPath(path.join(cfg.MIGRATIONS_DIR, 'bad-name')),
+        /Invalid migration name/,
+      );
+    });
+
+    it('throws when the resolved migration.ts file does not exist', () => {
+      assert.throws(
+        () =>
+          getMigrationNameFromPath(
+            path.join(cfg.MIGRATIONS_DIR, 'CreatePosts1000000000002'),
+          ),
+        /doesn't exist/,
+      );
     });
   });
 

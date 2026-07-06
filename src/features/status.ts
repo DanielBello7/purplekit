@@ -204,4 +204,10 @@ const status = async (args: DB_STATUS) => {
   }
 };
 
-export { status, dbStatus, doesDbExists };
+export {
+  status,
+  dbStatus,
+  doesDbExists,
+  migrationStatus,
+  checkForDuplicateMig,
+};

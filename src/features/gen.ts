@@ -7,10 +7,10 @@ import { cfg } from '@/config';
 import { sanitize } from '@/libs/sanitize';
 import { compareMig, getParserDialect } from '@/libs/compare-mig';
 import { getMigrationFiles } from './migrate';
+import { getMigrationLocation } from '@/libs/paths';
 import prettier from 'prettier';
 import * as fs from 'fs';
 import * as path from 'path';
-import { getMigrationLocation } from '@/libs/paths';
 
 type MoreInfo = {
   title: string;
@@ -206,8 +206,8 @@ const gen = async (args: GENERATE_MIGRATIONS) => {
   try {
     print(`Generating migration for ${database}...`);
     const response = await generate({
-      db: database,
       force: args.force,
+      db: database,
       name: name,
       save: true,
     });
@@ -225,7 +225,7 @@ const gen = async (args: GENERATE_MIGRATIONS) => {
     process.exit(0);
   } catch (e) {
     const err = e instanceof Error ? e.message : JSON.stringify(e);
-    printf(`Error creating database: ${err}`);
+    printf(`Migration generation failed: ${err}`);
     process.exit(1);
   }
 };

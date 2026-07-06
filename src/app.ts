@@ -8,15 +8,17 @@ import type {
   MIGRATION,
   SEED,
 } from './types';
-import { migration } from './features/migration';
-import { dropdb } from './features/dropdb';
 import { program } from 'commander';
-import { createdb } from './features/createdb';
-import { seed } from './features/seed';
-import { migrate } from './features/migrate';
-import { gen } from './features/gen';
-import { status } from './features/status';
-import { init } from './features/init';
+import {
+  createdb,
+  dropdb,
+  gen,
+  init,
+  migrate,
+  migration,
+  seed,
+  status,
+} from './features';
 
 // initialize the desc and info of the app
 program

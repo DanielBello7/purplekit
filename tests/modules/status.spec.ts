@@ -1,50 +1,74 @@
-import { describe, it } from 'mocha';
+import { checkForDuplicateMig } from '@/features/status';
+import { cfg } from '@/config';
+import { migration } from '../helpers/migration-gen';
+import { strict as assert } from 'node:assert';
+import * as fs from 'node:fs/promises';
+import * as os from 'node:os';
+import * as path from 'node:path';
 
 describe('status feature', () => {
-  describe('migrationStatus', () => {
-    it('connects to the requested target database');
-    it('splits local migration files into applied and pending groups');
-    it('treats migrations as pending when the migrations table is missing');
-    it('destroys the datasource after successful status collection');
-    it('destroys the datasource when status collection fails');
-  });
-
   describe('checkForDuplicateMig', () => {
-    it('loads all local migration files');
-    it('compares each migration against the other local migrations');
-    it('reports duplicate migrations by name');
-    it('returns the total number of migration files checked');
-  });
+    let cwd: string;
+    let tempRoot: string;
 
-  describe('doesDbExists', () => {
-    it('connects through the initial/admin database');
-    it('uses the dialect-specific database existence query');
-    it('returns databaseOk true when the database exists');
-    it('returns databaseOk false when the database does not exist');
-    it('destroys the datasource after a successful check');
-    it('destroys the datasource when the check fails');
-  });
+    beforeEach(async () => {
+      cwd = process.cwd();
+      tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'tgx-status-'));
+      process.chdir(tempRoot);
+    });
 
-  describe('dbStatus', () => {
-    it('connects to the requested target database');
-    it('uses the dialect-specific table listing query');
-    it('returns the number of base tables in the target database');
-    it('destroys the datasource after a successful table check');
-    it('destroys the datasource when the table check fails');
-  });
+    afterEach(async () => {
+      process.chdir(cwd);
+      await fs.rm(tempRoot, { recursive: true, force: true });
+    });
 
-  describe('status cli handler', () => {
-    it('uses the configured database name when --name is not provided');
-    it('sanitizes the requested database name');
-    it('includes database existence information in the JSON output');
-    it('includes table count when the database exists');
-    it(
-      'includes applied and pending migration counts when the database exists',
-    );
-    it('includes file-level duplicate migration information');
-    it(
-      'does not attempt target database inspection when the database does not exist',
-    );
-    it('prints an error and exits with code 1 when status collection fails');
+    async function writeMigration(name: string, queries: string[]) {
+      const file = path.join(cfg.MIGRATIONS_DIR, name, 'migration.ts');
+      await fs.mkdir(path.dirname(file), { recursive: true });
+      await fs.writeFile(file, migration(name, queries));
+      return file;
+    }
+
+    it('returns zero totals when there are no migration files', async () => {
+      const result = await checkForDuplicateMig();
+
+      assert.deepEqual(result, { total: 0, checks: [] });
+    });
+
+    it('returns the total number of migration files checked', async () => {
+      await writeMigration('CreateUsers1000000000001', [
+        'CREATE TABLE users (id int)',
+      ]);
+      await writeMigration('CreatePosts1000000000002', [
+        'CREATE TABLE posts (id int)',
+      ]);
+
+      const result = await checkForDuplicateMig();
+
+      assert.equal(result.total, 2);
+    });
+
+    it('reports migrations with equivalent normalized up queries', async () => {
+      await writeMigration('CreateUsers1000000000001', [
+        'CREATE TABLE users (id int)',
+        'CREATE TABLE posts (id int)',
+      ]);
+      await writeMigration('CreateUsersAgain1000000000002', [
+        'CREATE TABLE posts (id int)',
+        'CREATE TABLE users (id int)',
+      ]);
+
+      const result = await checkForDuplicateMig();
+
+      assert.equal(result.total, 2);
+      assert.equal(result.checks.length, 2);
+      assert.deepEqual(
+        result.checks.map((item) => item.name).sort(),
+        ['CreateUsers1000000000001', 'CreateUsersAgain1000000000002'],
+      );
+      assert.ok(
+        result.checks.every((item) => item.duplicateOf.name !== item.name),
+      );
+    });
   });
 });

@@ -1,0 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.dropdb = exports.createdb = exports.status = exports.seed = exports.migration = exports.migrate = exports.init = exports.gen = void 0;
+var gen_1 = require("./gen");
+Object.defineProperty(exports, "gen", { enumerable: true, get: function () { return gen_1.gen; } });
+var init_1 = require("./init");
+Object.defineProperty(exports, "init", { enumerable: true, get: function () { return init_1.init; } });
+var migrate_1 = require("./migrate");
+Object.defineProperty(exports, "migrate", { enumerable: true, get: function () { return migrate_1.migrate; } });
+var migration_1 = require("./migration");
+Object.defineProperty(exports, "migration", { enumerable: true, get: function () { return migration_1.migration; } });
+var seed_1 = require("./seed");
+Object.defineProperty(exports, "seed", { enumerable: true, get: function () { return seed_1.seed; } });
+var status_1 = require("./status");
+Object.defineProperty(exports, "status", { enumerable: true, get: function () { return status_1.status; } });
+var createdb_1 = require("./createdb");
+Object.defineProperty(exports, "createdb", { enumerable: true, get: function () { return createdb_1.createdb; } });
+var dropdb_1 = require("./dropdb");
+Object.defineProperty(exports, "dropdb", { enumerable: true, get: function () { return dropdb_1.dropdb; } });
+//# sourceMappingURL=index.js.map

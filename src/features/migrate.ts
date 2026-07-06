@@ -306,4 +306,5 @@ export {
   getMigrationsToRun,
   hasMigration,
   getMigrationFiles,
+  getMigrationNameFromPath,
 };

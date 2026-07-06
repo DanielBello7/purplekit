@@ -84,4 +84,4 @@ async function migration(args: MIGRATION) {
   }
 }
 
-export { migration };
+export { migration, apply, removeMig };

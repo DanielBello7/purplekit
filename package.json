@@ -9,25 +9,25 @@
   "bin": {
     "tgx": "./bin/tgx"
   },
-  "main": "./build/index.js",
-  "types": "./build/index.d.ts",
+  "main": "./build/src/index.js",
+  "types": "./build/src/index.d.ts",
   "exports": {
     ".": {
-      "types": "./build/index.d.ts",
-      "default": "./build/index.js"
+      "types": "./build/src/index.d.ts",
+      "default": "./build/src/index.js"
     }
   },
   "files": [
     "bin",
-    "build",
+    "build/src",
     "README.md"
   ],
   "scripts": {
     "test": "mocha",
-    "build": "tsc && tsc-alias",
+    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "dev": "tsx src/app.ts",
-    "tgx": "node build/app.js"
+    "tgx": "node build/src/app.js"
   },
   "keywords": [],
   "author": "",

@@ -120,31 +120,4 @@ describe('gen feature', () => {
     });
   });
 
-  describe('generate', () => {
-    it('connects to the requested target database');
-    it(
-      'returns no-changes when TypeORM reports no schema changes and force is false',
-    );
-    it('continues generation when force is true even without schema changes');
-    it('checks generated content against existing migrations before saving');
-    it(
-      'returns duplicate-found when an existing migration has the same normalized up queries',
-    );
-    it('does not save the migration when save is false');
-    it('saves the migration when save is true');
-    it('returns formatted migration content on success');
-    it('destroys the datasource after successful generation');
-    it('destroys the datasource when generation fails');
-  });
-
-  describe('gen cli handler', () => {
-    it('uses the configured database name as the generation target');
-    it('sanitizes the provided migration name');
-    it('passes force through to generate');
-    it('saves generated migration files');
-    it('prints a no-changes message when no schema changes exist');
-    it('prints a duplicate message when duplicate generation is blocked');
-    it('prints a success message when a migration is created');
-    it('prints an error and exits with code 1 when generation fails');
-  });
 });
