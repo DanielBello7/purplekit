@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import 'reflect-metadata';
 import type {
   CREATE_DB,

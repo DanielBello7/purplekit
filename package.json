@@ -1,6 +1,6 @@
 {
   "name": "purplekit",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Opinionated TypeORM database tooling for migrations, status checks, and seeders.",
   "repository": {
     "type": "git",
@@ -11,7 +11,7 @@
     "url": "https://github.com/DanielBello7/purplekit/issues"
   },
   "bin": {
-    "purplekit": "./bin/purplekit"
+    "purplekit": "./build/src/app.js"
   },
   "main": "./build/src/index.js",
   "types": "./build/src/index.d.ts",
@@ -22,7 +22,6 @@
     }
   },
   "files": [
-    "bin",
     "build/src",
     "README.md"
   ],
