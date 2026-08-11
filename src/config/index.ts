@@ -1,4 +1,7 @@
-import { PURPLEKIT_CONFIGURATIONS, PURPLEKIT_INTERNAL_CONFIGURATIONS } from '@/types';
+import {
+  PURPLEKIT_CONFIGURATIONS,
+  PURPLEKIT_INTERNAL_CONFIGURATIONS,
+} from '@/types';
 import {
   PURPLEKIT_CONFIG_JS,
   PURPLEKIT_CONFIG_TS,
@@ -11,7 +14,9 @@ import { createRequire } from 'node:module';
 import { existsSync } from 'node:fs';
 import * as path from 'node:path';
 
-const requireConfig = createRequire(path.join(process.cwd(), 'purplekit.config.cjs'));
+const requireConfig = createRequire(
+  path.join(process.cwd(), 'purplekit.config.cjs'),
+);
 
 const defaults: PURPLEKIT_CONFIGURATIONS = {
   ENTITIES: ['src/**/*.schema.ts'],
@@ -42,6 +47,10 @@ function loadUserConfig(): Partial<PURPLEKIT_CONFIGURATIONS> {
   for (const file of [PURPLEKIT_CONFIG_TS, PURPLEKIT_CONFIG_JS]) {
     const location = path.resolve(process.cwd(), file);
     if (!existsSync(location)) continue;
+
+    if (location.endsWith('.ts')) {
+      require('tsx/cjs');
+    }
 
     const mod = requireConfig(location) as {
       default?: Partial<PURPLEKIT_CONFIGURATIONS>;

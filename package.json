@@ -59,7 +59,6 @@
     "sctree-cli": "^1.1.0",
     "tsc-alias": "^1.8.17",
     "tsconfig-paths": "^4.2.0",
-    "tsx": "^4.22.4",
     "typescript": "^6.0.3"
   },
   "dependencies": {
@@ -70,6 +69,7 @@
     "picocolors": "^1.1.1",
     "prettier": "^3.9.3",
     "reflect-metadata": "^0.2.2",
+    "tsx": "^4.23.12",
     "typeorm": "^0.3.0",
     "typeorm-extension": "^3.9.0"
   }
