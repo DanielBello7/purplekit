@@ -1,6 +1,6 @@
 {
   "name": "purplekit",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Opinionated TypeORM database tooling for migrations, status checks, and seeders.",
   "repository": {
     "type": "git",
