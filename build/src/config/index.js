@@ -68,6 +68,9 @@ function loadUserConfig() {
         const location = path.resolve(process.cwd(), file);
         if (!(0, node_fs_1.existsSync)(location))
             continue;
+        if (location.endsWith('.ts')) {
+            require('tsx/cjs');
+        }
         const mod = requireConfig(location);
         return (_a = mod.default) !== null && _a !== void 0 ? _a : mod;
     }

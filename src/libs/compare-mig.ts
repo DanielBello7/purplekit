@@ -94,11 +94,18 @@ function sortObjectKeys(value: unknown): unknown {
 
 /**
  * Parses SQL into an AST and returns a canonical JSON representation.
+ * Falls back to a whitespace-normalized copy of the raw SQL when the parser
+ * can't handle a construct (e.g. a schema-qualified custom type such as
+ * `"public"."foo_enum"` in a column-type position, which `node-sql-parser`
+ * doesn't support even though it's valid Postgres DDL that TypeORM emits for
+ * every enum column). This keeps duplicate-detection working instead of
+ * failing the whole migration on constructs the parser doesn't cover; it
+ * only loses AST-level insensitivity to formatting/ordering for the specific
+ * statements that fail to parse.
  *
  * @param sql - Raw SQL string from a migration query.
  * @param dialect - Parser dialect for the target database.
- * @returns Normalized AST as a JSON string.
- * @throws When the SQL cannot be parsed.
+ * @returns Normalized AST as a JSON string, or a normalized SQL string when parsing fails.
  */
 function normalizeSqlAst(sql: string, dialect: SqlDialect): string {
   try {
@@ -106,9 +113,8 @@ function normalizeSqlAst(sql: string, dialect: SqlDialect): string {
     const ast = parser.astify(sql, { database: dialect });
     const normalized = sortObjectKeys(ast);
     return JSON.stringify(normalized);
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : JSON.stringify(e);
-    throw new Error(`Error parsing sql: ${msg}`);
+  } catch {
+    return sql.replace(/\s+/g, ' ').trim();
   }
 }
 

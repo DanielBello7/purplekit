@@ -128,5 +128,40 @@ describe('compare-mig library', () => {
       assert.equal(result, null);
       await fs.rm(root, { recursive: true, force: true });
     });
+
+    it('does not throw on a query node-sql-parser cannot handle (schema-qualified enum type)', async () => {
+      const current = migration('Mig1000000000001', [
+        'CREATE TABLE "transactions" ("type" "public"."transactions_type_enum" NOT NULL)',
+      ]);
+
+      const result = await compareMig(current, [], 'postgresql');
+
+      assert.equal(result, null);
+    });
+
+    it('still detects a duplicate for an unparseable query via the normalized-string fallback', async () => {
+      const root = await fs.mkdtemp(path.join(os.tmpdir(), 'purplekit-compare-'));
+      const existingFile = path.join(root, 'Mig1000000000001', 'migration.ts');
+      await fs.mkdir(path.dirname(existingFile), { recursive: true });
+      await fs.writeFile(
+        existingFile,
+        migration('Mig1000000000001', [
+          'CREATE TABLE "transactions" ("type" "public"."transactions_type_enum" NOT NULL)',
+        ]),
+      );
+
+      const current = migration('Mig1000000000002', [
+        'CREATE   TABLE "transactions"   ("type" "public"."transactions_type_enum"   NOT NULL)',
+      ]);
+
+      const result = await compareMig(
+        current,
+        [item('Mig1000000000001', existingFile)],
+        'postgresql',
+      );
+
+      assert.ok(result);
+      assert.equal(result.name, 'Mig1000000000001');
+    });
   });
 });
